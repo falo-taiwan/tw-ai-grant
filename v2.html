@@ -7930,6 +7930,7 @@
         // Active and load history for AI Consultant
         let currentReportText = '';
         let currentReportQuery = '';
+        let currentReportTokenData = null;
 
         function getHistory() {
             const histStr = safeLocalStorage.getItem('gemini_consultation_history');
@@ -7960,7 +7961,8 @@
                 query: query,
                 responseText: responseText,
                 filteredCount: filteredCount,
-                mode: mode || 'recommended'
+                mode: mode || 'recommended',
+                tokenData: currentReportTokenData // Save the detailed token and cost breakdown
             };
             
             history.unshift(newItem);
@@ -7988,13 +7990,23 @@
                     ? `<span style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan);">自訂指令</span>`
                     : `<span style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: #a78bfa;">精選診斷</span>`;
                 
+                let tokenBadgeHtml = "";
+                if (item.tokenData) {
+                    const totalTokens = item.tokenData.totalTokens || 0;
+                    const costText = item.tokenData.model === 'ollama' 
+                        ? 'Ollama免費' 
+                        : `NT$${(item.tokenData.costTWD || 0).toFixed(4)}`;
+                    tokenBadgeHtml = `<span style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan);">Token: ${(totalTokens/1000).toFixed(1)}k (${costText})</span>`;
+                }
+                
                 return `
                 <div class="history-item-card" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 0.75rem 1rem; transition: all 0.2s ease;">
                     <div style="flex-grow: 1; cursor: pointer; text-align: left; overflow: hidden;" onclick="loadHistoryItem('${item.id}')">
-                        <div style="font-size: 0.8rem; color: var(--accent-cyan); font-weight: 500; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;">
+                        <div style="font-size: 0.8rem; color: var(--accent-cyan); font-weight: 500; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
                             <i class="bi bi-calendar-event"></i> ${item.timestamp}
                             ${modeBadge}
                             <span style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--text-secondary);">背景：${item.filteredCount} 款</span>
+                            ${tokenBadgeHtml}
                         </div>
                         <div style="font-size: 0.88rem; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px; font-weight: 500;" title="${item.query}">
                             ${item.query}
@@ -8036,6 +8048,7 @@
             document.getElementById('ai-prompt-input').value = item.query;
             currentReportText = item.responseText;
             currentReportQuery = item.query;
+            currentReportTokenData = item.tokenData || null; // Restore token data
             
             const responseBox = document.getElementById('ai-response-box');
             responseBox.style.display = 'block';
@@ -8064,14 +8077,17 @@
             
             const prevText = currentReportText;
             const prevQuery = currentReportQuery;
+            const prevToken = currentReportTokenData; // Backup current token data
             
             currentReportText = item.responseText;
             currentReportQuery = item.query;
+            currentReportTokenData = item.tokenData || null; // Bind historical token data
             
             exportAiReport(format);
             
             currentReportText = prevText;
             currentReportQuery = prevQuery;
+            currentReportTokenData = prevToken; // Restore backed-up token data
         }
 
         function clearAllAiHistory() {
@@ -8101,14 +8117,104 @@
             }
         }
 
+        function generateTokenAuditPanelHtml(tokenData) {
+            if (!tokenData) return '';
+            
+            const total = tokenData.totalTokens || 0;
+            const input = tokenData.promptTokens || 0;
+            const output = tokenData.completionTokens || 0;
+            
+            const system = tokenData.systemTokens || 0;
+            const rag = tokenData.ragTokens || 0;
+            const user = tokenData.userTokens || 0;
+            
+            const systemPct = input > 0 ? Math.round((system / input) * 100) : 0;
+            const ragPct = input > 0 ? Math.round((rag / input) * 100) : 0;
+            const userPct = input > 0 ? Math.round((user / input) * 100) : 0;
+            
+            const modelLabel = tokenData.model === 'ollama' 
+                ? `Ollama 本地模型 (${tokenData.modelName || 'llama3'})` 
+                : `Gemini 雲端模型 (${tokenData.modelName || 'gemini-3.1-flash-lite'})`;
+                
+            const costHtml = tokenData.model === 'ollama'
+                ? `本機執行 (免費)`
+                : `USD $${(tokenData.costUSD || 0).toFixed(5)} | 約 <strong>NT$ ${(tokenData.costTWD || 0).toFixed(4)}</strong> (以 1:30 匯率折算)`;
+
+            return `
+                <!-- Token Audit & Cost Monitor Panel -->
+                <div class="token-audit-panel" style="background-color: #0c0f17; border: 1px solid rgba(6, 182, 212, 0.2); border-left: 4px solid var(--accent-cyan); border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;">
+                    <div style="background: rgba(6, 182, 212, 0.08); padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid rgba(6, 182, 212, 0.1);" onclick="toggleTokenAuditContent(event)">
+                        <span style="font-size: 0.82rem; color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="bi bi-cpu-fill"></i> 💻 [Token 審計與成本監控面板] — 消耗: ${total.toLocaleString()} tokens
+                        </span>
+                        <span id="token-audit-toggle-icon" style="font-size: 0.8rem; color: var(--text-secondary);"><i class="bi bi-chevron-down"></i> 點擊展開詳情</span>
+                    </div>
+                    <div id="token-audit-content" style="display: none; padding: 1rem; font-size: 0.8rem; color: #94a3b8; line-height: 1.6;">
+                        <div style="border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 0.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; color: white;">
+                            <span><strong>🤖 診斷引擎:</strong> ${modelLabel}</span>
+                        </div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <span style="color: #e2e8f0; font-weight: 600;">📥 輸入階段 (Input) — 共 ${input.toLocaleString()} tokens</span>
+                            <div style="padding-left: 1.2rem; margin-top: 0.25rem;">
+                                <div>├── ⚙️ 系統提示與角色設定: <span style="color: white; font-weight: 600;">${system.toLocaleString()}</span> tokens (${systemPct}%)</div>
+                                <div>├── 📚 知識庫方案檢索背景 (RAG): <span style="color: white; font-weight: 600;">${rag.toLocaleString()}</span> tokens (${ragPct}%)</div>
+                                <div>└── ✍️ 使用者痛點與指令: <span style="color: white; font-weight: 600;">${user.toLocaleString()}</span> tokens (${userPct}%)</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 0.5rem;">
+                            <span style="color: #e2e8f0; font-weight: 600;">📤 輸出階段 (Output)</span>
+                            <div style="padding-left: 1.2rem; margin-top: 0.25rem;">
+                                └── 🤖 模型生成的建議書內容: <span style="color: white; font-weight: 600;">${output.toLocaleString()}</span> tokens
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem; background: rgba(255,255,255,0.02); padding: 0.6rem 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04);">
+                            <div>📊 <strong>累計總量 (Total):</strong> <span style="color: var(--accent-cyan); font-weight: 600;">${total.toLocaleString()}</span> tokens</div>
+                            <div>💰 <strong>估計財務成本 (Cost):</strong> <span style="color: #a78bfa; font-weight: 600;">${costHtml}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleTokenAuditContent(event) {
+            event.stopPropagation();
+            const content = document.getElementById('token-audit-content');
+            const icon = document.getElementById('token-audit-toggle-icon');
+            if (content && icon) {
+                const isHidden = content.style.display === 'none';
+                content.style.display = isHidden ? 'block' : 'none';
+                icon.innerHTML = isHidden 
+                    ? '<i class="bi bi-chevron-up"></i> 點擊收起詳情' 
+                    : '<i class="bi bi-chevron-down"></i> 點擊展開詳情';
+            }
+        }
+
         function renderResponseWithToolbar(markdownText) {
             const responseBox = document.getElementById('ai-response-box');
             if (!responseBox) return;
             
+            let tokenBadgeHtml = "";
+            let auditPanelHtml = "";
+            
+            if (currentReportTokenData) {
+                const total = currentReportTokenData.totalTokens || 0;
+                const costText = currentReportTokenData.model === 'ollama'
+                    ? '本機免費'
+                    : `約 NT$${(currentReportTokenData.costTWD || 0).toFixed(4)}`;
+                tokenBadgeHtml = `
+                    <span style="font-size: 0.72rem; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.2); padding: 0.15rem 0.45rem; border-radius: 4px; color: var(--accent-cyan); font-family: monospace; margin-left: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        <i class="bi bi-cpu"></i> Token: ${(total/1000).toFixed(1)}k (${costText})
+                    </span>
+                `;
+                
+                auditPanelHtml = generateTokenAuditPanelHtml(currentReportTokenData);
+            }
+            
             const toolbarHtml = `
                 <div id="ai-response-toolbar" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
-                    <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
+                    <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
                         <i class="bi bi-file-earmark-text"></i> 轉型診斷分析建議書
+                        ${tokenBadgeHtml}
                     </span>
                     <div style="display: flex; gap: 0.5rem;">
                         <button onclick="copyAiReport()" class="compare-bar-btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 0.35rem 0.7rem; font-size: 0.75rem; height: auto; display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer;">
@@ -8125,7 +8231,7 @@
             `;
             
             const contentHtml = parseMarkdown(markdownText);
-            responseBox.innerHTML = toolbarHtml + '<div id="ai-response-body-content">' + contentHtml + '</div>';
+            responseBox.innerHTML = toolbarHtml + auditPanelHtml + '<div id="ai-response-body-content">' + contentHtml + '</div>';
             
             // Ensure the container is shown and box is expanded
             const container = document.getElementById('ai-response-container');
@@ -8206,12 +8312,42 @@
                 mimeType = 'text/markdown;charset=utf-8;';
                 content = `# AI 數位轉型工具導入建議書\n\n`;
                 content += `> **業務痛點描述**: ${currentReportQuery}\n`;
-                content += `> **診斷日期**: ${new Date().toLocaleString('zh-TW')}\n\n`;
-                content += `---\n\n`;
+                content += `> **診斷日期**: ${new Date().toLocaleString('zh-TW')}\n`;
+                
+                if (currentReportTokenData) {
+                    const t = currentReportTokenData;
+                    const modelLabel = t.model === 'ollama' ? `Ollama (${t.modelName})` : `Gemini (${t.modelName})`;
+                    const costLabel = t.model === 'ollama' ? `本機免費` : `USD $${(t.costUSD || 0).toFixed(5)} / NT$ ${(t.costTWD || 0).toFixed(4)}`;
+                    content += `> **Token 審計與成本監控**:\n`;
+                    content += `> - 診斷模型: ${modelLabel}\n`;
+                    content += `> - 📥 輸入階段: 共 ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} | RAG背景: ${t.ragTokens.toLocaleString()} | 使用者痛點: ${t.userTokens.toLocaleString()})\n`;
+                    content += `> - 📤 輸出階段: 共 ${t.completionTokens.toLocaleString()} tokens\n`;
+                    content += `> - 📊 累計總量: 共 ${t.totalTokens.toLocaleString()} tokens\n`;
+                    content += `> - 💰 估計財務成本: ${costLabel}\n`;
+                }
+                
+                content += `\n---\n\n`;
                 content += currentReportText;
             } else if (format === 'html') {
                 filename += '.html';
                 mimeType = 'text/html;charset=utf-8;';
+                
+                let tokenAuditHtml = '';
+                if (currentReportTokenData) {
+                    const t = currentReportTokenData;
+                    const modelLabel = t.model === 'ollama' ? `Ollama (${t.modelName})` : `Gemini (${t.modelName})`;
+                    const costLabel = t.model === 'ollama' ? `<span style="color: #10b981; font-weight: 600;">本機執行 (免費)</span>` : `USD $${(t.costUSD || 0).toFixed(5)} / <span style="color: #8b5cf6; font-weight: 600;">NT$ ${(t.costTWD || 0).toFixed(4)}</span>`;
+                    tokenAuditHtml = `
+                    <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem; font-family: monospace; font-size: 0.88em; color: #475569; line-height: 1.6;">
+                        <strong>[Token 審計與成本監控]</strong><br>
+                        ├── 🤖 診斷模型: ${modelLabel}<br>
+                        ├── 📥 輸入階段: ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} | 知識庫RAG: ${t.ragTokens.toLocaleString()} | 使用者痛點: ${t.userTokens.toLocaleString()})<br>
+                        ├── 📤 輸出階段 (AI回覆): ${t.completionTokens.toLocaleString()} tokens<br>
+                        └── 📊 總計用量: <strong>${t.totalTokens.toLocaleString()}</strong> tokens | 💰 估計成本: ${costLabel}
+                    </div>
+                    `;
+                }
+                
                 content = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -8292,6 +8428,7 @@
         <div class="meta-box">
             <strong>業務痛點與自訂指令</strong>: ${currentReportQuery.replace(/\n/g, '<br>')}<br>
             <strong>診斷日期</strong>: ${new Date().toLocaleString('zh-TW')}
+            ${tokenAuditHtml}
         </div>
         ${parseMarkdownToCleanHtml(currentReportText)}
     </div>
@@ -8562,6 +8699,80 @@ ${JSON.stringify(contextTools, null, 2)}
                 }
 
                 if (aiResponseText) {
+                    // Extract token counts
+                    let promptTokens = 0;
+                    let completionTokens = 0;
+                    if (selectedModel === 'ollama') {
+                        promptTokens = data.prompt_eval_count || Math.ceil(prompt.length * 0.6);
+                        completionTokens = data.eval_count || Math.ceil(aiResponseText.length * 0.6);
+                    } else {
+                        if (data.usageMetadata) {
+                            promptTokens = data.usageMetadata.promptTokenCount || 0;
+                            completionTokens = data.usageMetadata.candidatesTokenCount || 0;
+                        } else {
+                            promptTokens = Math.ceil(prompt.length * 0.6);
+                            completionTokens = Math.ceil(aiResponseText.length * 0.6);
+                        }
+                    }
+                    const totalTokens = promptTokens + completionTokens;
+
+                    // Proportional split calculation based on character lengths
+                    const lenSystem = (mode === 'recommended') ? 
+                        (`你是一位專業的政府 AI 補助數位轉型顧問。
+
+【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 \${contextTools.length} 款政府核定 AI 補助方案進行深度比對評估後所生成。」（請務必使用實際的數字 \${contextTools.length}，這對於讓業主知悉分析範圍是非常重要的資訊）。
+
+以下是符合業主預算與行業條件的核定 AI 補助方案清單：
+
+
+業主的實際轉型痛點描述如下：
+「」
+
+請針對業主的痛點，從上方篩選後的清單中精選最適合的 3~5 款核心工具方案（請優先挑選 3~5 款，但如果符合條件的方案特別多且合適，最多可以推薦至 10 款，請靈活配置，勿拘泥於固定數量，但應確保推薦之方案皆具備極高的針對性與實用價值），撰寫一份深度的「數位轉型工具導入建議書」。
+建議書必須包含：
+1. 痛點剖析：簡述為何這些工具能解決其痛點。
+2. 工具推薦：以 Markdown 表格呈現推薦工具，包含「方案名稱」、「廠商名稱」、「價格期程」、以及「核心推薦理由」。
+3. 預期轉型效益與成效指標。
+4. 補助申請引導：特別列出 source_url 連結方便業主點擊跳轉進行申請。
+請使用繁體中文回答，語氣要專業、務實。`).length 
+                        : 
+                        (`【背景知識庫（供參考，若使用者的指令與此無關，請完全忽略）】
+目前篩選出的核定 AI 補助方案清單如下：
+
+
+【使用者自訂指令】
+請完全依據以下使用者輸入的指令、問題、語氣與格式要求進行回覆（你可以自由運用上方的背景知識庫進行回答，若指令與清單無關，則可完全忽略背景知識庫，直接回答指令內容）：
+「」`).length;
+
+                    const lenRAG = JSON.stringify(contextTools, null, 2).length;
+                    const lenUser = userQuery.length;
+                    const lenTotal = lenSystem + lenRAG + lenUser;
+
+                    const systemTokens = lenTotal > 0 ? Math.round(promptTokens * (lenSystem / lenTotal)) : 0;
+                    const ragTokens = lenTotal > 0 ? Math.round(promptTokens * (lenRAG / lenTotal)) : 0;
+                    const userTokens = Math.max(0, promptTokens - systemTokens - ragTokens);
+
+                    // Cost Calculation Engine
+                    let costUSD = 0;
+                    let costTWD = 0;
+                    if (selectedModel !== 'ollama') {
+                        costUSD = (promptTokens * 0.075 / 1000000) + (completionTokens * 0.30 / 1000000);
+                        costTWD = costUSD * 30; // NT$ 30 exchange rate
+                    }
+
+                    currentReportTokenData = {
+                        promptTokens: promptTokens,
+                        completionTokens: completionTokens,
+                        totalTokens: totalTokens,
+                        systemTokens: systemTokens,
+                        ragTokens: ragTokens,
+                        userTokens: userTokens,
+                        costUSD: costUSD,
+                        costTWD: costTWD,
+                        model: selectedModel === 'ollama' ? 'ollama' : 'gemini',
+                        modelName: selectedModel === 'ollama' ? model : selectedModel
+                    };
+
                     currentReportText = aiResponseText;
                     currentReportQuery = userQuery;
                     saveHistory(userQuery, aiResponseText, contextTools.length, mode);
