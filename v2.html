@@ -903,6 +903,37 @@
             width: 150px;
         }
 
+        /* AI Prompt Section Layout & RWD */
+        .ai-input-container {
+            display: flex;
+            gap: 0.75rem;
+            align-items: stretch;
+            margin-bottom: 1rem;
+        }
+        .ai-input-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 230px;
+            flex-shrink: 0;
+        }
+        @media (max-width: 768px) {
+            .ai-input-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .ai-input-btn-group {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .ai-input-btn-group button {
+                flex: 1;
+                min-width: 140px;
+                height: 44px !important;
+            }
+        }
+
         @media (max-width: 1024px) {
             aside {
                 display: none;
@@ -1089,9 +1120,9 @@
                 </div>
 
                 <!-- Prompt Input & Send Button -->
-                <div style="display: flex; gap: 0.75rem; align-items: stretch; margin-bottom: 1rem;">
+                <div class="ai-input-container">
                     <textarea id="ai-prompt-input" class="search-main-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex: 1; min-height: 96px; height: 96px; resize: none; line-height: 1.5; padding: 0.75rem 1rem; border-radius: 10px; font-family: inherit; font-size: 0.9rem;" autocomplete="off"></textarea>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 230px; flex-shrink: 0;">
+                    <div class="ai-input-btn-group">
                         <button onclick="askAiConsultant('recommended')" class="search-action-btn" id="ai-send-rec-btn" style="flex: 1; height: auto; padding: 0 1rem; justify-content: center; background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">
                             <i class="bi bi-patch-check-fill"></i> <span id="ai-btn-rec-text">推薦回答 (精選診斷)</span>
                         </button>
