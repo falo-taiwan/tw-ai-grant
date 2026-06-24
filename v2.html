@@ -1164,19 +1164,19 @@
                 <div id="ollama-config-row" style="display: none; margin-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 0.75rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; width: 100%;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; flex-grow: 1; width: 100%;">
                         <!-- IP Input -->
-                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 200px; flex-grow: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 160px; flex-grow: 1;">
                             <label for="ollama-ip-input" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Ollama IP：</label>
                             <input type="text" id="ollama-ip-input" class="search-main-input" value="192.168.31.202" placeholder="例如 192.168.31.202..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 100px;">
                         </div>
                         <!-- Port Input -->
-                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 120px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 110px;">
                             <label for="ollama-port-input" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Port：</label>
-                            <input type="text" id="ollama-port-input" class="search-main-input" value="11434" placeholder="預設 11434..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; width: 80px;">
+                            <input type="text" id="ollama-port-input" class="search-main-input" value="11434" placeholder="預設 11434..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; width: 60px;">
                         </div>
                         <!-- Model Name Input -->
-                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 180px; flex-grow: 1;">
-                            <label for="ollama-model-input" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">模型名稱：</label>
-                            <input type="text" id="ollama-model-input" list="ollama-model-list" class="search-main-input" value="gemma4:e2b" placeholder="例如 gemma4:e2b, gemma4:e4b..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 100px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 150px; flex-grow: 1;">
+                            <label for="ollama-model-input" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">模型：</label>
+                            <input type="text" id="ollama-model-input" list="ollama-model-list" class="search-main-input" value="gemma4:e2b" placeholder="例如 gemma4:e2b, gemma4:e4b..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 80px;">
                             <datalist id="ollama-model-list">
                                 <option value="gemma4:e2b"></option>
                                 <option value="gemma4:e4b"></option>
@@ -1186,11 +1186,23 @@
                                 <option value="qwen2.5"></option>
                             </datalist>
                         </div>
+                        <!-- RAG Filter Engine Select -->
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 220px; flex-grow: 1;">
+                            <label for="rag-filter-select" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">RAG 降噪引擎：</label>
+                            <select id="rag-filter-select" style="height: 34px; font-size: 0.82rem; padding: 0 0.5rem; flex-grow: 1; min-width: 150px; background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px; outline: none; cursor: pointer; font-family: inherit;">
+                                <option value="none">無過濾 (全量原始資料 - 易超載)</option>
+                                <option value="projection">欄位投影與精簡 (Token 壓縮)</option>
+                                <option value="tfidf" selected>TF-IDF 相關性排序 (精選 Top 10 - 推薦)</option>
+                                <option value="semantic">語意特徵與同義詞擴展 (精選 Top 10 - 推薦)</option>
+                                <option value="ui">UI 條件聯動精確過濾 (當前篩選)</option>
+                            </select>
+                        </div>
                     </div>
                     <!-- Muted Hints -->
                     <div style="font-size: 0.72rem; color: var(--text-secondary); width: 100%; margin-top: 0.25rem; line-height: 1.4; display: flex; flex-direction: column; gap: 0.15rem;">
                         <span>* 提示：Ollama 設定採臨時輸入（重整網頁即恢復預設，不進行本地儲存），便於連接外部伺服器。</span>
                         <span>* 若連線失敗，請確保本地 Ollama 已啟動，且環境變數設定 <code>OLLAMA_ORIGINS="*"</code> 以允許 CORS 跨網域請求。</span>
+                        <span id="rag-filter-hint" style="color: var(--accent-cyan); font-weight: 500;">* 當前 RAG 降噪引擎已預設啟用「TF-IDF 相關性排序」，能自動精選最相關的前 10 筆方案送出，有效防範地端 4,096 tokens 超載崩潰。</span>
                     </div>
                 </div>
                 
@@ -1238,6 +1250,34 @@
                 <i class="bi bi-trash3-fill"></i> 清除
             </button>
             <button class="compare-bar-btn" id="compare-btn">進行對比</button>
+        </div>
+    </div>
+
+    <!-- Token Overload Warning Modal -->
+    <div class="modal-overlay" id="token-warning-modal">
+        <div class="modal-content" style="max-width: 550px; padding: 2rem; background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(239, 68, 68, 0.3); backdrop-filter: blur(20px); border-radius: 16px; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444;">
+            <button class="close-modal-btn" onclick="closeTokenWarningModal()"><i class="bi bi-x-lg"></i></button>
+            <div class="modal-header" style="margin-bottom: 1.2rem; border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding-bottom: 0.75rem;">
+                <h3 style="color: #ef4444; font-family: var(--font-title); font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem; margin: 0; border: none; padding: 0;">
+                    <i class="bi bi-exclamation-triangle-fill"></i> 地端 Token 容量超載預警
+                </h3>
+            </div>
+            <div style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <p>目前即將發送的 Prompt 預估為 <strong style="color: #f87171; font-size: 1.15rem;" id="token-warning-count">0</strong> tokens，已超出地端模型安全限制 (<strong style="color: white; font-weight: 600;">4,096 tokens</strong>)。</p>
+                <p style="margin-top: 0.75rem;">若直接在本地執行此超量 Prompt，Ollama 模型將被迫<b>截斷輸入</b>，導致最終生成的報告<b>極度殘缺（例如只輸出單個字）</b>，甚至可能導致您的主機記憶體溢出而卡死。</p>
+                <p style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.8rem; color: white; font-weight: 600;">請選擇您的優化策略：</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                <button id="token-btn-autofix" class="compare-bar-btn" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); border: none; color: white; padding: 0.8rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 42px; width: 100%;">
+                    <i class="bi bi-magic"></i> 🛠️ 套用 TF-IDF 降噪並執行 (推薦)
+                </button>
+                <button id="token-btn-forcerun" class="compare-bar-btn" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; padding: 0.8rem; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s; height: 42px; width: 100%;">
+                    🧪 仍要嘗試地端全文 (觀察超載崩潰現象)
+                </button>
+                <button onclick="closeTokenWarningModal()" class="compare-bar-btn" style="background: transparent; border: none; color: var(--text-secondary); padding: 0.5rem; cursor: pointer; transition: all 0.2s; width: 100%;">
+                    取消，返回手動調整篩選條件
+                </button>
+            </div>
         </div>
     </div>
 
@@ -8533,6 +8573,186 @@
             return lines.join('\n');
         }
 
+        // =========================================================================
+        // [RAG ENGINEERING SANDBOX] Front-End Noise-Reduction & Safeguard Engines
+        // =========================================================================
+
+        const SYNONYM_DICTIONARY = {
+            "pos": ["結帳", "收銀", "點餐", "菜單", "門店管理", "進銷存", "零售", "收銀機", "點餐機"],
+            "結帳": ["pos", "收銀", "點餐", "菜單", "門店管理", "進銷存", "零售", "點餐機"],
+            "收銀": ["pos", "結帳", "點餐", "菜單", "門店管理", "進銷存", "零售", "收銀機"],
+            "點餐": ["pos", "結帳", "收銀", "菜單", "自助點餐", "餐飲", "餐廳", "點餐機"],
+            "客服": ["聊天機器人", "chatbot", "line bot", "自動回覆", "智慧客服", "智慧問答", "qa"],
+            "機器人": ["客服", "chatbot", "line bot", "自動回覆", "智慧客服", "智慧問答"],
+            "行銷": ["廣告", "推播", "導購", "行銷素材", "圖文生成", "社群", "臉書", "fb", "ig", "會員", "促銷"],
+            "宣傳": ["廣告", "推播", "導購", "行銷素材", "圖文生成", "社群", "臉書", "fb", "ig", "會員", "促銷"],
+            "廣告": ["行銷", "宣傳", "推播", "社群", "臉書", "fb", "ig", "導購"],
+            "財務": ["記帳", "會計", "報表", "理財", "發票", "現金流", "盈虧", "成本"],
+            "會計": ["財務", "記帳", "報表", "發票", "現金流", "盈虧", "成本"],
+            "發票": ["財務", "會計", "記帳", "報表", "電子發票", "載具"],
+            "進銷存": ["庫存", "採購", "出貨", "倉儲", "商品管理", "供應鏈"],
+            "庫存": ["進銷存", "採購", "出貨", "倉儲", "商品管理", "供應鏈"],
+            "ocr": ["辨識", "文字識別", "掃描", "拍照識別", "表單自動化"],
+            "辨識": ["ocr", "文字識別", "掃描", "拍照識別", "表單自動化"],
+            "排班": ["排班表", "班表", "人事", "考勤", "打卡", "排程", "人力資源"],
+            "排班表": ["排班", "班表", "人事", "考勤", "打卡", "排程", "人力資源"]
+        };
+
+        // Expand user queries using context synonyms
+        function expandQueryWithSynonyms(query) {
+            if (!query) return "";
+            let expanded = query;
+            const lowerQuery = query.toLowerCase();
+            
+            Object.keys(SYNONYM_DICTIONARY).forEach(key => {
+                if (lowerQuery.includes(key)) {
+                    expanded += " " + SYNONYM_DICTIONARY[key].join(" ");
+                }
+            });
+            return expanded;
+        }
+
+        // Pure JS Chinese Character-Level TF-IDF Engine
+        function rankToolsByTfidf(query, tools) {
+            if (!query || !tools || tools.length === 0) return tools;
+            
+            // Tokenize text into unigrams and bigrams
+            function tokenize(text) {
+                if (!text) return [];
+                const cleanText = text.toLowerCase().replace(/[\s\p{P}]/gu, '');
+                const tokens = [];
+                // Unigrams
+                for (let i = 0; i < cleanText.length; i++) {
+                    tokens.push(cleanText[i]);
+                }
+                // Bigrams
+                for (let i = 0; i < cleanText.length - 1; i++) {
+                    tokens.push(cleanText[i] + cleanText[i+1]);
+                }
+                return tokens;
+            }
+
+            const queryTokens = tokenize(query);
+            if (queryTokens.length === 0) return tools;
+
+            // Calculate document frequency (DF)
+            const df = {};
+            const docsTokens = tools.map(t => {
+                const textToSearch = `${t.tool_name} ${t.provider_name} ${t.category_standardized || ''} ${t.tool_description || ''} ${t.specifications || ''}`;
+                const tokens = tokenize(textToSearch);
+                const uniqueTokens = new Set(tokens);
+                uniqueTokens.forEach(token => {
+                    df[token] = (df[token] || 0) + 1;
+                });
+                return { tool: t, tokens: tokens };
+            });
+
+            const N = tools.length;
+            const idf = {};
+            queryTokens.forEach(token => {
+                const docFreq = df[token] || 0;
+                // Smooth IDF
+                idf[token] = Math.log(1 + (N - docFreq + 0.5) / (docFreq + 0.5));
+            });
+
+            // Score each tool
+            const scoredTools = docsTokens.map(doc => {
+                let score = 0;
+                const tf = {};
+                doc.tokens.forEach(token => {
+                    tf[token] = (tf[token] || 0) + 1;
+                });
+
+                queryTokens.forEach(token => {
+                    if (tf[token]) {
+                        const termFreq = tf[token];
+                        score += termFreq * idf[token];
+                    }
+                });
+
+                return { tool: doc.tool, score: score };
+            });
+
+            // Sort by score descending
+            scoredTools.sort((a, b) => b.score - a.score);
+            
+            const results = scoredTools.filter(item => item.score > 0).map(item => item.tool);
+            if (results.length === 0) {
+                return tools.slice(0, 10); // fallback
+            }
+            return results;
+        }
+
+        // Token warning modal state and promise resolver
+        let tokenWarningResolve = null;
+
+        function openTokenWarningModal(count) {
+            const modal = document.getElementById('token-warning-modal');
+            const countSpan = document.getElementById('token-warning-count');
+            if (countSpan) countSpan.innerText = count.toLocaleString();
+            if (modal) modal.classList.add('show');
+            
+            return new Promise((resolve) => {
+                tokenWarningResolve = resolve;
+            });
+        }
+
+        function closeTokenWarningModal() {
+            const modal = document.getElementById('token-warning-modal');
+            if (modal) modal.classList.remove('show');
+            if (tokenWarningResolve) {
+                tokenWarningResolve(null); // Cancel
+                tokenWarningResolve = null;
+            }
+        }
+
+        // Initialize warning modal and filter select handlers
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnAutofix = document.getElementById('token-btn-autofix');
+            const btnForcerun = document.getElementById('token-btn-forcerun');
+            
+            if (btnAutofix) {
+                btnAutofix.onclick = () => {
+                    const modal = document.getElementById('token-warning-modal');
+                    if (modal) modal.classList.remove('show');
+                    if (tokenWarningResolve) {
+                        tokenWarningResolve('autofix');
+                        tokenWarningResolve = null;
+                    }
+                };
+            }
+            
+            if (btnForcerun) {
+                btnForcerun.onclick = () => {
+                    const modal = document.getElementById('token-warning-modal');
+                    if (modal) modal.classList.remove('show');
+                    if (tokenWarningResolve) {
+                        tokenWarningResolve('forcerun');
+                        tokenWarningResolve = null;
+                    }
+                };
+            }
+
+            const select = document.getElementById('rag-filter-select');
+            const hint = document.getElementById('rag-filter-hint');
+            if (select && hint) {
+                select.onchange = () => {
+                    const val = select.value;
+                    if (val === 'none') {
+                        hint.innerHTML = "<span style='color: #f87171;'>⚠️ 警告：發送完整原始資料庫將佔用大量 Token，極易超出地端模型 4,096 上限而卡死或截斷。</span>";
+                    } else if (val === 'projection') {
+                        hint.innerHTML = "* 已啟用「欄位投影與精簡」：剔除冗餘中繼欄位並進行結構化 Token 壓縮，約可節省 80% Token 空間。";
+                    } else if (val === 'tfidf') {
+                        hint.innerHTML = "* 已啟用「TF-IDF 相關性排序」：前端自動精選最相關的前 10 筆方案送出，有效預防地端超載。";
+                    } else if (val === 'semantic') {
+                        hint.innerHTML = "* 已啟用「語意特徵與同義詞擴展」：前端擴展同義詞並以語意相關度精選前 10 筆方案送出，精確降噪。";
+                    } else if (val === 'ui') {
+                        hint.innerHTML = "* 已啟用「UI 條件聯動精確過濾」：僅將您在左側篩選面板中篩選出的方案送出。";
+                    }
+                };
+            }
+        });
+
         // Ask AI Consultant - Direct Serverless Gemini API / Local Ollama API Call (RAG based on filteredData)
         async function askAiConsultant(mode = 'recommended') {
             const modelSelect = document.getElementById('model-select-v2');
@@ -8556,26 +8776,156 @@
             const btnUnlText = document.getElementById('ai-btn-unl-text');
             const responseBox = document.getElementById('ai-response-box');
 
-            // Prepare context (take filtered tools, cap at 35 to prevent prompt dilution and context window overflow)
-            const maxRAGCount = 35;
-            const contextTools = filteredData.slice(0, maxRAGCount).map(t => ({
-                tool_name: t.tool_name,
-                provider_name: t.provider_name,
-                category: t.category_standardized,
-                price: t.price_raw,
-                description: t.tool_description,
-                source_url: t.source_url
-            }));
+            // Get the selected RAG filter engine (default to 'tfidf')
+            const ragFilterSelect = document.getElementById('rag-filter-select');
+            let selectedFilter = ragFilterSelect ? ragFilterSelect.value : 'tfidf';
+            
+            // Determine which data to process based on selected filter
+            let processedTools = [];
+            let filterName = "TF-IDF 相關性排序";
+            
+            if (selectedFilter === 'none') {
+                processedTools = [...TOOLS_DATA]; // Full raw database
+                filterName = "無過濾 (全量原始資料)";
+            } else if (selectedFilter === 'ui') {
+                processedTools = [...filteredData]; // Current UI filters
+                filterName = "UI 條件聯動精確過濾";
+            } else if (selectedFilter === 'projection') {
+                processedTools = [...filteredData]; // Current UI filters (to be projected/compressed)
+                filterName = "欄位投影與精簡";
+            } else if (selectedFilter === 'tfidf') {
+                processedTools = rankToolsByTfidf(userQuery, filteredData).slice(0, 10);
+                filterName = "TF-IDF 相關性排序";
+            } else if (selectedFilter === 'semantic') {
+                const expandedQuery = expandQueryWithSynonyms(userQuery);
+                processedTools = rankToolsByTfidf(expandedQuery, filteredData).slice(0, 10);
+                filterName = "語意特徵與同義詞擴展";
+            }
+
+            // Build temporary contextTools to estimate prompt size
+            let tempContextTools = processedTools.map(t => {
+                if (selectedFilter === 'projection') {
+                    return {
+                        n: t.tool_name,
+                        p: t.provider_name,
+                        c: t.category_standardized,
+                        pr: t.price_raw,
+                        d: t.tool_description ? t.tool_description.slice(0, 80) + '...' : '',
+                        u: t.source_url
+                    };
+                } else {
+                    return {
+                        tool_name: t.tool_name,
+                        provider_name: t.provider_name,
+                        category: t.category_standardized,
+                        price: t.price_raw,
+                        description: t.tool_description,
+                        source_url: t.source_url
+                    };
+                }
+            });
+
+            // Build temporary prompt text to estimate tokens
+            let tempPrompt = '';
+            const tempRagJson = selectedFilter === 'projection' ? JSON.stringify(tempContextTools) : JSON.stringify(tempContextTools, null, 2);
+            if (mode === 'recommended') {
+                tempPrompt = `
+你是一位專業的政府 AI 補助數位轉型顧問。
+
+【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 ${processedTools.length} 款政府核定 AI 補助方案進行深度比對評估後所生成。」（請務必使用實際的數字，這對於讓業主知悉分析範圍是非常重要的資訊）。
+
+以下是符合業主預算與行業條件的核定 AI 補助方案清單：
+${tempRagJson}
+
+業主的實際轉型痛點描述如下：
+「${userQuery}」
+
+請針對業主的痛點，從上方篩選後的清單中精選最適合的 3~5 款核心工具方案，撰寫一份深度的「數位轉型工具導入建議書」。
+建議書必須包含：
+1. 痛點剖析：簡述為何這些工具能解決其痛點。
+2. 工具推薦：以 Markdown 表格呈現推薦工具。
+3. 預期轉型效益與成效指標。
+4. 補助申請引導。
+請使用繁體中文回答，語氣要專業、務實。
+`;
+            } else {
+                tempPrompt = `
+【背景知識庫（供參考，若使用者的指令與此無關，請完全忽略）】
+目前篩選出的核定 AI 補助方案清單如下：
+${tempRagJson}
+
+【使用者自訂指令】
+請完全依據以下使用者輸入的指令、問題、語氣與格式要求進行回覆：
+「${userQuery}」
+`;
+            }
+
+            const estimatedTokens = Math.ceil(tempPrompt.length * 0.45);
+
+            // Intercept if tokens exceed 4096 and local Ollama model is selected
+            if (selectedModel === 'ollama' && estimatedTokens > 4096) {
+                const action = await openTokenWarningModal(estimatedTokens);
+                if (action === 'autofix') {
+                    // Force switch filter to tfidf and update UI
+                    selectedFilter = 'tfidf';
+                    if (ragFilterSelect) ragFilterSelect.value = 'tfidf';
+                    const hintSpan = document.getElementById('rag-filter-hint');
+                    if (hintSpan) hintSpan.innerText = "* 當前 RAG 降噪引擎已自動切換至「TF-IDF 相關性排序」以優化 Token 用量。";
+                    
+                    // Re-process tools with TF-IDF
+                    processedTools = rankToolsByTfidf(userQuery, filteredData).slice(0, 10);
+                    filterName = "TF-IDF 相關性排序 [超載自動優化]";
+                    tempContextTools = processedTools.map(t => ({
+                        tool_name: t.tool_name,
+                        provider_name: t.provider_name,
+                        category: t.category_standardized,
+                        price: t.price_raw,
+                        description: t.tool_description,
+                        source_url: t.source_url
+                    }));
+                } else if (action === 'forcerun') {
+                    // Proceed with no changes
+                    filterName += " [強制超載發送]";
+                } else {
+                    // Cancelled by user
+                    return;
+                }
+            }
+
+            // Build final contextTools and prompt
+            const contextTools = processedTools.map(t => {
+                if (selectedFilter === 'projection') {
+                    return {
+                        n: t.tool_name,
+                        p: t.provider_name,
+                        c: t.category_standardized,
+                        pr: t.price_raw,
+                        d: t.tool_description ? t.tool_description.slice(0, 80) + '...' : '',
+                        u: t.source_url
+                    };
+                } else {
+                    return {
+                        tool_name: t.tool_name,
+                        provider_name: t.provider_name,
+                        category: t.category_standardized,
+                        price: t.price_raw,
+                        description: t.tool_description,
+                        source_url: t.source_url
+                    };
+                }
+            });
+
+            const ragJsonString = selectedFilter === 'projection' ? JSON.stringify(contextTools) : JSON.stringify(contextTools, null, 2);
 
             let prompt = '';
             if (mode === 'recommended') {
                 prompt = `
 你是一位專業的政府 AI 補助數位轉型顧問。
 
-【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 ${filteredData.length} 款政府核定 AI 補助方案${filteredData.length > maxRAGCount ? `（為確保分析品質與精確度，已精選其中最相關的 ${contextTools.length} 款進行深度評估）` : ''}進行深度比對評估後所生成。」（請務必使用實際的數字，這對於讓業主知悉分析範圍是非常重要的資訊）。
+【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 ${processedTools.length} 款政府核定 AI 補助方案${processedTools.length > 10 ? `（為確保分析品質與精確度，已透過前端 ${filterName} 技術精選其中最相關的 ${contextTools.length} 款進行深度評估）` : ''}進行深度比對評估後所生成。」（請務必使用實際的數字，這對於讓業主知悉分析範圍是非常重要的資訊）。
 
 以下是符合業主預算與行業條件的核定 AI 補助方案清單：
-${JSON.stringify(contextTools, null, 2)}
+${ragJsonString}
 
 業主的實際轉型痛點描述如下：
 「${userQuery}」
@@ -8583,7 +8933,7 @@ ${JSON.stringify(contextTools, null, 2)}
 請針對業主的痛點，從上方篩選後的清單中精選最適合的 3~5 款核心工具方案（請優先挑選 3~5 款，但如果符合條件的方案特別多且合適，最多可以推薦至 10 款，請靈活配置，勿拘泥於固定數量，但應確保推薦之方案皆具備極高的針對性與實用價值），撰寫一份深度的「數位轉型工具導入建議書」。
 建議書必須包含：
 1. 痛點剖析：簡述為何這些工具能解決其痛點。
-2. 工具推薦：以 Markdown 表格呈現推薦工具，包含「方案名稱」、「廠商名稱」、「價格期程」、以及「核心推薦理由」。
+2. 工具推薦：以 Markdown 表格呈現推薦工具，包含「方案名稱」、「廠商名稱」、「價格期程」、「核心推薦理由」。
 3. 預期轉型效益與成效指標。
 4. 補助申請引導：特別列出 source_url 連結方便業主點擊跳轉進行申請。
 請使用繁體中文回答，語氣要專業、務實。
@@ -8592,7 +8942,7 @@ ${JSON.stringify(contextTools, null, 2)}
                 prompt = `
 【背景知識庫（供參考，若使用者的指令與此無關，請完全忽略）】
 目前篩選出的核定 AI 補助方案清單如下：
-${JSON.stringify(contextTools, null, 2)}
+${ragJsonString}
 
 【使用者自訂指令】
 請完全依據以下使用者輸入的指令、問題、語氣與格式要求進行回覆（你可以自由運用上方的背景知識庫進行回答，若指令與清單無關，則可完全忽略背景知識庫，直接回答指令內容）：
@@ -8619,20 +8969,21 @@ ${JSON.stringify(contextTools, null, 2)}
                 port = portInput ? portInput.value.trim() : '11434';
                 model = modelInput ? modelInput.value.trim() : 'llama3';
                 
+                const promptTokens = Math.ceil(prompt.length * 0.45);
                 if (mode === 'recommended') {
                     if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
-                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 為您深度精選最佳方案，請稍候...`;
+                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 並透過「${filterName}」引擎（載入 ${contextTools.length} 筆，約 ${promptTokens.toLocaleString()} tokens）為您深度精選最佳方案，請稍候...`;
                 } else {
                     if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
-                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 執行您的自訂指令，請稍候...`;
+                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 並透過「${filterName}」引擎（載入 ${contextTools.length} 筆，約 ${promptTokens.toLocaleString()} tokens）執行您的自訂指令，請稍候...`;
                 }
             } else {
                 if (mode === 'recommended') {
                     if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
-                    loadingText = `AI 顧問正在從 ${filteredData.length} 款方案中${filteredData.length > maxRAGCount ? `（已精選前 ${contextTools.length} 款）` : ''}，為您深度精選 3~5 款最佳方案，請稍候...`;
+                    loadingText = `AI 顧問正在從 ${processedTools.length} 款方案中${processedTools.length > 10 ? `（已透過 ${filterName} 精選前 ${contextTools.length} 款）` : ''}，為您深度精選 3~5 款最佳方案，請稍候...`;
                 } else {
                     if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
-                    loadingText = `AI 助理正在依據篩選出的 ${filteredData.length} 款方案${filteredData.length > maxRAGCount ? `（已精選前 ${contextTools.length} 款）` : ''}執行您的自訂指令，請稍候...`;
+                    loadingText = `AI 助理正在依據篩選出的 ${processedTools.length} 款方案${processedTools.length > 10 ? `（已透過 ${filterName} 精選前 ${contextTools.length} 款）` : ''}執行您的自訂指令，請稍候...`;
                 }
             }
 
@@ -8767,7 +9118,7 @@ ${JSON.stringify(contextTools, null, 2)}
 請完全依據以下使用者輸入的指令、問題、語氣與格式要求進行回覆（你可以自由運用上方的背景知識庫進行回答，若指令與清單無關，則可完全忽略背景知識庫，直接回答指令內容）：
 「」`).length;
 
-                    const lenRAG = JSON.stringify(contextTools, null, 2).length;
+                    const lenRAG = ragJsonString.length;
                     const lenUser = userQuery.length;
                     const lenTotal = lenSystem + lenRAG + lenUser;
 
