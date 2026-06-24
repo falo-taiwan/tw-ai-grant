@@ -1151,12 +1151,39 @@
                                 <option value="gemini-3.1-flash-lite" selected>Gemini 3.1 Flash-Lite (預設)</option>
                                 <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
                                 <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+                                <option value="ollama">Ollama (本地/外部模型)</option>
                             </select>
                         </div>
                     </div>
                     <button onclick="toggleAiHistoryPanel()" class="compare-bar-btn" id="ai-history-toggle-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; height: 34px; display: flex; align-items: center; gap: 0.35rem; color: var(--text-secondary); transition: all 0.2s; white-space: nowrap;">
                         <i class="bi bi-clock-history" style="color: var(--accent-cyan);"></i> 歷程紀錄 (<span id="ai-history-count">0</span>)
                     </button>
+                </div>
+
+                <!-- Ollama Local/External LLM Configurations (Volatile, not stored) -->
+                <div id="ollama-config-row" style="display: none; margin-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 0.75rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; flex-grow: 1; width: 100%;">
+                        <!-- IP Input -->
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 200px; flex-grow: 1;">
+                            <label for="ollama-ip-input" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Ollama IP：</label>
+                            <input type="text" id="ollama-ip-input" class="search-main-input" value="127.0.0.1" placeholder="例如 127.0.0.1..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 100px;">
+                        </div>
+                        <!-- Port Input -->
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 120px;">
+                            <label for="ollama-port-input" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Port：</label>
+                            <input type="text" id="ollama-port-input" class="search-main-input" value="11434" placeholder="預設 11434..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; width: 80px;">
+                        </div>
+                        <!-- Model Name Input -->
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 180px; flex-grow: 1;">
+                            <label for="ollama-model-input" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">模型名稱：</label>
+                            <input type="text" id="ollama-model-input" class="search-main-input" value="llama3" placeholder="例如 llama3, qwen2.5..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 100px;">
+                        </div>
+                    </div>
+                    <!-- Muted Hints -->
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); width: 100%; margin-top: 0.25rem; line-height: 1.4; display: flex; flex-direction: column; gap: 0.15rem;">
+                        <span>* 提示：Ollama 設定採臨時輸入（重整網頁即恢復預設，不進行本地儲存），便於連接外部伺服器。</span>
+                        <span>* 若連線失敗，請確保本地 Ollama 已啟動，且環境變數設定 <code>OLLAMA_ORIGINS="*"</code> 以允許 CORS 跨網域請求。</span>
+                    </div>
                 </div>
                 
                 <!-- AI History List Panel -->
@@ -8342,10 +8369,13 @@
             return lines.join('\n');
         }
 
-        // Ask AI Consultant - Direct Serverless Gemini API Call (RAG based on filteredData)
+        // Ask AI Consultant - Direct Serverless Gemini API / Local Ollama API Call (RAG based on filteredData)
         async function askAiConsultant(mode = 'recommended') {
+            const modelSelect = document.getElementById('model-select-v2');
+            const selectedModel = modelSelect ? modelSelect.value : 'gemini-3.1-flash-lite';
+
             const apiKey = safeLocalStorage.getItem('gemini_api_key');
-            if (!apiKey) {
+            if (selectedModel !== 'ollama' && !apiKey) {
                 alert("請先在 AI 智慧轉型診斷面板底部的「Gemini API Key」輸入框中設定您的 API 金鑰！");
                 return;
             }
@@ -8410,12 +8440,35 @@ ${JSON.stringify(contextTools, null, 2)}
             if (sendUnlBtn) sendUnlBtn.disabled = true;
             
             let loadingText = '';
-            if (mode === 'recommended') {
-                if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
-                loadingText = `AI 顧問正在從 ${contextTools.length} 款方案中，為您深度精選 3~5 款最佳方案，請稍候...`;
+            let ip = '127.0.0.1';
+            let port = '11434';
+            let model = 'llama3';
+            let protocol = 'http://';
+
+            if (selectedModel === 'ollama') {
+                const ipInput = document.getElementById('ollama-ip-input');
+                const portInput = document.getElementById('ollama-port-input');
+                const modelInput = document.getElementById('ollama-model-input');
+                
+                ip = ipInput ? ipInput.value.trim() : '127.0.0.1';
+                port = portInput ? portInput.value.trim() : '11434';
+                model = modelInput ? modelInput.value.trim() : 'llama3';
+                
+                if (mode === 'recommended') {
+                    if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
+                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 為您深度精選最佳方案，請稍候...`;
+                } else {
+                    if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
+                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 執行您的自訂指令，請稍候...`;
+                }
             } else {
-                if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
-                loadingText = `AI 助理正在依據篩選出的 ${contextTools.length} 款方案執行您的自訂指令，請稍候...`;
+                if (mode === 'recommended') {
+                    if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
+                    loadingText = `AI 顧問正在從 ${contextTools.length} 款方案中，為您深度精選 3~5 款最佳方案，請稍候...`;
+                } else {
+                    if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
+                    loadingText = `AI 助理正在依據篩選出的 ${contextTools.length} 款方案執行您的自訂指令，請稍候...`;
+                }
             }
 
             const container = document.getElementById('ai-response-container');
@@ -8431,13 +8484,41 @@ ${JSON.stringify(contextTools, null, 2)}
                 </style>
             `;
 
-            // Retrieve selected model from dropdown (Reset to default Lite on page load, do not store)
-            const modelSelect = document.getElementById('model-select-v2');
-            const selectedModel = modelSelect ? modelSelect.value : 'gemini-3.1-flash-lite';
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
-            
-            try {
-                const response = await fetch(url, {
+            // Prepare Request Configuration (Gemini vs Ollama)
+            let url = '';
+            let requestOptions = {};
+
+            if (selectedModel === 'ollama') {
+                if (!ip || !port) {
+                    alert("請輸入有效的 Ollama IP 與 Port！");
+                    if (sendRecBtn) sendRecBtn.disabled = false;
+                    if (sendUnlBtn) sendUnlBtn.disabled = false;
+                    if (btnRecText) btnRecText.innerText = "推薦回答 (精選診斷)";
+                    if (btnUnlText) btnUnlText.innerText = "不設限回答 (自訂指令)";
+                    return;
+                }
+                
+                if (ip.startsWith('http://') || ip.startsWith('https://')) {
+                    protocol = '';
+                }
+                
+                const normalizedIp = ip.replace(/\/$/, '');
+                url = `${protocol}${normalizedIp}:${port}/api/generate`;
+                
+                requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        prompt: prompt,
+                        stream: false
+                    })
+                };
+            } else {
+                url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+                requestOptions = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -8449,15 +8530,28 @@ ${JSON.stringify(contextTools, null, 2)}
                             }]
                         }]
                     })
-                });
+                };
+            }
+            
+            try {
+                const response = await fetch(url, requestOptions);
 
                 if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.error?.message || "Gemini API 請求失敗");
+                    if (selectedModel === 'ollama') {
+                        throw new Error(`Ollama 伺服器傳回錯誤 (${response.status})`);
+                    } else {
+                        const errData = await response.json();
+                        throw new Error(errData.error?.message || "Gemini API 請求失敗");
+                    }
                 }
 
                 const data = await response.json();
-                const aiResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                let aiResponseText = '';
+                if (selectedModel === 'ollama') {
+                    aiResponseText = data.response;
+                } else {
+                    aiResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                }
 
                 if (aiResponseText) {
                     currentReportText = aiResponseText;
@@ -8468,8 +8562,16 @@ ${JSON.stringify(contextTools, null, 2)}
                     responseBox.innerHTML = "錯誤：無法取得 AI 的回覆內容。";
                 }
             } catch (err) {
-                responseBox.innerHTML = `<div style="color: var(--accent-red); font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> 連線失敗：${err.message}</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">請確認您的 Gemini API 金鑰輸入無誤，且您的網路連線正常。</div>`;
+                if (selectedModel === 'ollama') {
+                    responseBox.innerHTML = `<div style="color: var(--accent-red); font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> 連線失敗：${err.message}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        請確認您的 Ollama 服務已啟動（位址：${protocol}${ip}:${port}），且已下載並載入 <code>${model}</code> 模型。<br>
+                        * 若為本地伺服器連線失敗，請檢查 Ollama 是否設定了環境變數 <code>OLLAMA_ORIGINS="*"</code>。
+                    </div>`;
+                } else {
+                    responseBox.innerHTML = `<div style="color: var(--accent-red); font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> 連線失敗：${err.message}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">請確認您的 Gemini API 金鑰輸入無誤，且您的網路連線正常。</div>`;
+                }
             } finally {
                 if (sendRecBtn) sendRecBtn.disabled = false;
                 if (sendUnlBtn) sendUnlBtn.disabled = false;
@@ -8653,6 +8755,18 @@ ${JSON.stringify(contextTools, null, 2)}
         }
         const drawerKey = document.getElementById('api-key-input-v2');
         if (drawerKey) drawerKey.value = storedKey;
+
+        // Model select change handling (dynamic Ollama configuration visibility)
+        const modelSelect = document.getElementById('model-select-v2');
+        const ollamaRow = document.getElementById('ollama-config-row');
+        if (modelSelect && ollamaRow) {
+            const syncOllamaRow = () => {
+                ollamaRow.style.display = modelSelect.value === 'ollama' ? 'flex' : 'none';
+            };
+            modelSelect.addEventListener('change', syncOllamaRow);
+            // Run on load to sync in case of browser cache
+            syncOllamaRow();
+        }
     </script>
 
 </body>
