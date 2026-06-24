@@ -7589,8 +7589,9 @@
             const btnUnlText = document.getElementById('ai-btn-unl-text');
             const responseBox = document.getElementById('ai-response-box');
 
-            // Prepare context (take all filtered tools)
-            const contextTools = filteredData.map(t => ({
+            // Prepare context (take filtered tools, cap at 35 to prevent prompt dilution and context window overflow)
+            const maxRAGCount = 35;
+            const contextTools = filteredData.slice(0, maxRAGCount).map(t => ({
                 tool_name: t.tool_name,
                 provider_name: t.provider_name,
                 category: t.category_standardized,
@@ -7602,9 +7603,9 @@
             let prompt = '';
             if (mode === 'recommended') {
                 prompt = `
-幕僚政府 AI 補助數位轉型顧問。
+你是一位專業的政府 AI 補助數位轉型顧問。
 
-【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 ${contextTools.length} 款政府核定 AI 補助方案進行深度比對評估後所生成。」（請務必使用實際的數字 ${contextTools.length}，這對於讓業主知悉分析範圍是非常重要的資訊）。
+【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 ${filteredData.length} 款政府核定 AI 補助方案${filteredData.length > maxRAGCount ? `（為確保分析品質與精確度，已精選其中最相關的 ${contextTools.length} 款進行深度評估）` : ''}進行深度比對評估後所生成。」（請務必使用實際的數字，這對於讓業主知悉分析範圍是非常重要的資訊）。
 
 以下是篩選後符合業主預算與行業條件的核定 AI 補助方案清單：
 ${JSON.stringify(contextTools, null, 2)}
@@ -7661,10 +7662,10 @@ ${JSON.stringify(contextTools, null, 2)}
             } else {
                 if (mode === 'recommended') {
                     if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
-                    loadingText = `AI 顧問正在從 ${contextTools.length} 款方案中，為您深度精選 1~3 款最佳方案，請稍候...`;
+                    loadingText = `AI 顧問正在從 ${filteredData.length} 款方案中${filteredData.length > maxRAGCount ? `（已精選前 ${contextTools.length} 款）` : ''}，為您深度精選 1~3 款最佳方案，請稍候...`;
                 } else {
                     if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
-                    loadingText = `AI 助理正在依據篩選出的 ${contextTools.length} 款方案執行您的自訂指令，請稍候...`;
+                    loadingText = `AI 助理正在依據篩選出的 ${filteredData.length} 款方案${filteredData.length > maxRAGCount ? `（已精選前 ${contextTools.length} 款）` : ''}執行您的自訂指令，請稍候...`;
                 }
             }
 
@@ -7710,7 +7711,10 @@ ${JSON.stringify(contextTools, null, 2)}
                     body: JSON.stringify({
                         model: model,
                         prompt: prompt,
-                        stream: false
+                        stream: false,
+                        options: {
+                            num_ctx: 8192
+                        }
                     })
                 };
             } else {
