@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="台灣政府 AI 補助工具庫採集與結構化專案 - 專案紀錄報告">
+    <title>專案紀錄 | 台灣政府 AI 補助工具庫結構化專案</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(31, 41, 55, 0.8);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #06b6d4;
+            --success-color: #10b981;
+            --font-title: 'Outfit', 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --glow-primary: rgba(139, 92, 246, 0.15);
+            --glow-secondary: rgba(6, 182, 212, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, var(--glow-primary) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, var(--glow-secondary) 0px, transparent 50%);
+            background-attachment: fixed;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .tag-badge {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-number {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 40%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-sub {
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(12px);
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 0.75rem;
+        }
+
+        h2 i {
+            color: var(--accent-secondary);
+        }
+
+        .pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            margin: 2rem 0;
+            padding-left: 2rem;
+            border-left: 2px dashed rgba(139, 92, 246, 0.3);
+        }
+
+        .pipeline-step {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.25rem;
+            border-radius: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .pipeline-step:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .pipeline-step::before {
+            content: '';
+            position: absolute;
+            left: calc(-2rem - 6px);
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            box-shadow: 0 0 10px var(--accent-primary);
+        }
+
+        .pipeline-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.25rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pipeline-title span {
+            color: var(--accent-secondary);
+            font-size: 0.85rem;
+        }
+
+        .pipeline-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .schema-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .schema-table th, .schema-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .schema-table th {
+            font-family: var(--font-title);
+            color: white;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .schema-table td:first-child {
+            font-family: monospace;
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+
+        .schema-table td:nth-child(2) {
+            color: var(--accent-primary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .file-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(6, 182, 212, 0.3);
+            transform: translateX(5px);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            color: var(--accent-secondary);
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            margin-bottom: 0.15rem;
+        }
+
+        .file-path {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .file-action-btn {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--accent-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-action-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .section-card {
+                padding: 1.5rem;
+            }
+            .schema-table th, .schema-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .file-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="tag-badge">Data Engineering</div>
+            <h1>台灣政府 AI 補助工具庫結構化專案</h1>
+            <p class="subtitle">企業級 AI 知識管理系統（KM/RAG）適用之結構化資料庫建構紀錄</p>
+        </header>
+
+        <!-- 數據指標看板 -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">224</div>
+                <div class="stat-label">整合工具總筆數</div>
+                <div class="stat-sub">無損結構化清洗</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">79</div>
+                <div class="stat-label">來源一：工業館/Tcloud/共契</div>
+                <div class="stat-sub">經濟部產業競爭力輔導團</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">145</div>
+                <div class="stat-label">來源二：智慧轉型方案</div>
+                <div class="stat-sub">商業服務業數位轉型專區</div>
+            </div>
+        </section>
+
+        <!-- 爬蟲管線與技術決策 -->
+        <section class="section-card">
+            <h2><i class="bi bi-cpu"></i> 雙軌高防護爬蟲管線設計</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                本專案針對動態與靜態兩種不同架構的網頁，設計了專屬的數據採集路徑。我們秉持「以最少伺服器開銷換取最高完整度」的原則進行逆向工程。
+            </p>
+            
+            <div class="pipeline">
+                <div class="pipeline-step">
+                    <div class="pipeline-title">步驟 1：逆向分析 JS 封包 <span>(來源一：工業館)</span></div>
+                    <div class="pipeline-desc">
+                        跳過網頁渲染層，透過 Chrome DevTools 網路封包解碼，挖掘出底層的公開 Google Sheet 密鑰（ID：<code style="color: var(--accent-secondary)">18Hq6sUrweHmm_08AcFPBnQ8XypXJ7CM6</code>）。
+                    </div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-title">步驟 2：直連 API 匯出無損 CSV <span>(來源一)</span></div>
+                    <div class="pipeline-desc">
+                        利用 Google Visualization 接口一鍵下載無損 CSV 數據，利用 Python 內建的 CSV 引擎，精準處理單個儲存格內包含換行符號的特殊格式，成功取得 79 筆數據。
+                    </div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-title">步驟 3：分頁遍歷與第一層卡片爬取 <span>(來源二：智慧轉型)</span></div>
+                    <div class="pipeline-desc">
+                        設定行業別參數 <code>mindusty=-1</code> 以獲取全量工具，在 9 個分頁中解析 HTML 節點，搜集基本屬性與 145 個方案細節頁的動態連結參數。
+                    </div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-title">步驟 4：深度解析內頁以抓取敏感欄位 <span>(來源二)</span></div>
+                    <div class="pipeline-desc">
+                        遍歷請求 145 個內頁，爬取「方案規格說明」、「成功案例效益」等非結構化大段文字，並利用 Regex 正則分析，抓取廠商統一編號（統編）、聯絡郵件等關鍵資訊。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 資料清洗與 RAG 標準化欄位 -->
+        <section class="section-card">
+            <h2><i class="bi bi-filter-square"></i> 資料清洗與 AI-Ready 欄位設計</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                為了讓大語言模型 (LLM) 與向量數據庫 (Vector DB) 能夠執行精確硬性過濾（如價格、期程）與高準度語意檢索，我們將凌亂的原始網頁字串清洗為標準化欄位：
+            </p>
+            
+            <table class="schema-table">
+                <thead>
+                    <tr>
+                        <th>欄位名稱</th>
+                        <th>資料類型</th>
+                        <th>清洗與 RAG 應用邏輯</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>id</td>
+                        <td>String</td>
+                        <td>以 <code>moeai_</code> 與 <code>smebiz_</code> 為前綴的全球唯一辨識碼，防止資料庫衝突。</td>
+                    </tr>
+                    <tr>
+                        <td>provider_tax_id</td>
+                        <td>String</td>
+                        <td>台灣企業 8 碼統一編號。便於後續與企業 ERP/CRM 進行廠商關聯。</td>
+                    </tr>
+                    <tr>
+                        <td>category_standardized</td>
+                        <td>String</td>
+                        <td><strong>分類標準化</strong>：將兩邊網站不一致的標籤，統一映射至「行銷與商務推廣」、「人資與知識管理」等 8 大 RAG 優化類別。</td>
+                    </tr>
+                    <tr>
+                        <td>price_amount</td>
+                        <td>Integer</td>
+                        <td><strong>數值化價格</strong>：以正則過濾掉千分位逗號與文字，保存純整數（如 $24,000 -> 24000），供 Vector DB 進行硬性區間過濾。</td>
+                    </tr>
+                    <tr>
+                        <td>duration_months</td>
+                        <td>Integer</td>
+                        <td><strong>數值化授權月數</strong>：從混亂字串（如「使用月數 : 6」、「期程12個月」）中提取純整數，供預算期程篩選。</td>
+                    </tr>
+                    <tr>
+                        <td>success_cases</td>
+                        <td>String</td>
+                        <td>提取出的成功案例與效益分析。在 RAG 檢索中，這是評估 AI 方案是否適合特定情境的關鍵文字區塊。</td>
+                    </tr>
+                    <tr>
+                        <td>source_url</td>
+                        <td>String</td>
+                        <td>原始網頁引用來源。提供給 AI 模型，讓生成回覆時能夠附帶「真實連結引用」，消滅幻覺。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 檔案路徑與存取 -->
+        <section class="section-card">
+            <h2><i class="bi bi-folder2-open"></i> 專案產出檔案清單</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                所有結構化成果與教材均已安全存放於您的本地目錄，可以直接在開發環境中調用：
+            </p>
+            
+            <ul class="file-list">
+                <li class="file-item">
+                    <div class="file-info">
+                        <div class="file-icon"><i class="bi bi-filetype-json"></i></div>
+                        <div>
+                            <div class="file-name">unified_ai_tools_db.json</div>
+                            <div class="file-path">/Users/force/.gemini/antigravity/brain/.../unified_ai_tools_db.json</div>
+                        </div>
+                    </div>
+                    <a href="file:///Users/force/.gemini/antigravity/brain/20039396-f77b-4297-9410-8d56143ae67f/unified_ai_tools_db.json" class="file-action-btn" target="_blank"><i class="bi bi-eye"></i> 檢視 JSON</a>
+                </li>
+                <li class="file-item">
+                    <div class="file-info">
+                        <div class="file-icon"><i class="bi bi-filetype-csv"></i></div>
+                        <div>
+                            <div class="file-name">unified_ai_tools_db.csv</div>
+                            <div class="file-path">/Users/force/.gemini/antigravity/brain/.../unified_ai_tools_db.csv</div>
+                        </div>
+                    </div>
+                    <a href="file:///Users/force/.gemini/antigravity/brain/20039396-f77b-4297-9410-8d56143ae67f/unified_ai_tools_db.csv" class="file-action-btn" target="_blank"><i class="bi bi-eye"></i> 檢視 CSV</a>
+                </li>
+                <li class="file-item">
+                    <div class="file-info">
+                        <div class="file-icon"><i class="bi bi-file-earmark-code"></i></div>
+                        <div>
+                            <div class="file-name">scrape_ai_tools.py</div>
+                            <div class="file-path">/Users/force/.gemini/antigravity/brain/.../scratch/scrape_ai_tools.py</div>
+                        </div>
+                    </div>
+                    <a href="file:///Users/force/.gemini/antigravity/brain/20039396-f77b-4297-9410-8d56143ae67f/scratch/scrape_ai_tools.py" class="file-action-btn" target="_blank"><i class="bi bi-code-slash"></i> 檢視腳本</a>
+                </li>
+                <li class="file-item">
+                    <div class="file-info">
+                        <div class="file-icon"><i class="bi bi-journal-bookmark"></i></div>
+                        <div>
+                            <div class="file-name">ai_km_scraping_lesson_plan.md</div>
+                            <div class="file-path">/Users/force/.gemini/antigravity/brain/.../ai_km_scraping_lesson_plan.md</div>
+                        </div>
+                    </div>
+                    <a href="file:///Users/force/.gemini/antigravity/brain/20039396-f77b-4297-9410-8d56143ae67f/ai_km_scraping_lesson_plan.md" class="file-action-btn" target="_blank"><i class="bi bi-book"></i> 檢視 MD 教案</a>
+                </li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>© 2026 台灣政府 AI 補助工具庫結構化專案報告．專為 AI KM / RAG 應用優化</p>
+        </footer>
+    </div>
+
+</body>
+</html>

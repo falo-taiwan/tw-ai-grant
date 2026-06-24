@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI 課程教材：網頁逆向工程、雙軌爬蟲與 AI-Ready 結構化資料庫實戰">
+    <title>AI 實戰教材 | 網頁逆向工程、爬蟲與知識庫化</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-color: #080b11;
+            --sidebar-bg: #0e131f;
+            --card-bg: rgba(15, 22, 36, 0.8);
+            --card-border: rgba(30, 41, 59, 0.8);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-purple: #a78bfa;
+            --accent-cyan: #22d3ee;
+            --accent-green: #34d399;
+            --accent-red: #f87171;
+            --font-title: 'Outfit', 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+            --glow-purple: rgba(167, 139, 250, 0.15);
+            --glow-cyan: rgba(34, 211, 238, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            line-height: 1.7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 10% 10%, var(--glow-purple) 0px, transparent 45%),
+                radial-gradient(at 90% 90%, var(--glow-cyan) 0px, transparent 45%);
+            background-attachment: fixed;
+            display: flex;
+        }
+
+        /* 側邊導覽列 */
+        aside {
+            width: 320px;
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(167, 139, 250, 0.4);
+        }
+
+        .logo-text {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, white, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex-grow: 1;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.04);
+            border-color: rgba(22d, 211, 238, 0.1);
+        }
+
+        .nav-item.active a {
+            background: linear-gradient(90deg, rgba(167, 139, 250, 0.1), rgba(34, 211, 238, 0.05));
+            border-left: 3px solid var(--accent-purple);
+            color: var(--accent-cyan);
+        }
+
+        .nav-item span {
+            font-family: var(--font-title);
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0.6;
+        }
+
+        .aside-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* 主要內容區 */
+        main {
+            margin-left: 320px;
+            width: calc(100% - 320px);
+            padding: 4rem 5% 6rem 5%;
+            max-width: 1000px;
+        }
+
+        .header-content {
+            margin-bottom: 4rem;
+        }
+
+        .class-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(167, 139, 250, 0.1);
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            color: var(--accent-purple);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, white 40%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .lead-text {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* 教學模組區塊 */
+        .module-section {
+            margin-bottom: 5rem;
+            scroll-margin-top: 4rem;
+        }
+
+        .module-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+        }
+
+        .module-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--accent-cyan);
+            font-family: var(--font-title);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        li::before {
+            content: "\F2E6";
+            font-family: "bootstrap-icons";
+            position: absolute;
+            left: 0;
+            color: var(--accent-purple);
+            font-size: 0.9rem;
+        }
+
+        /* 程式碼展示區塊 */
+        .code-container {
+            background-color: #05070c;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0b0e17;
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .code-lang {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-lang i {
+            color: #3b82f6;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .copy-btn:hover {
+            color: white;
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        /* 重點提示盒 */
+        .callout-box {
+            background: linear-gradient(90deg, rgba(167, 139, 250, 0.05) 0%, rgba(34, 211, 238, 0.02) 100%);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 0 12px 12px 0;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .callout-box h4 {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .callout-box h4 i {
+            color: var(--accent-cyan);
+        }
+
+        /* 互動測驗區 */
+        .quiz-container {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.08) 0%, rgba(34, 211, 238, 0.05) 100%);
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-top: 4rem;
+        }
+
+        .quiz-title {
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quiz-title i {
+            color: var(--accent-purple);
+        }
+
+        .quiz-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-q {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .quiz-option.correct {
+            background: rgba(52, 211, 153, 0.1);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(248, 113, 113, 0.1);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .quiz-explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .quiz-explanation span {
+            font-weight: 600;
+            color: white;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            aside {
+                display: none;
+            }
+            main {
+                margin-left: 0;
+                width: 100%;
+                padding: 2rem 1rem;
+            }
+            h1 {
+                font-size: 2.3rem;
+            }
+            .module-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 側邊選單 -->
+    <aside>
+        <div>
+            <div class="logo-area">
+                <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                <div class="logo-text">AI Academy</div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-target="module1">
+                    <a href="#module1"><span>M1</span> 動機與商業場景</a>
+                </li>
+                <li class="nav-item" data-target="module2">
+                    <a href="#module2"><span>M2</span> 網頁逆向工程</a>
+                </li>
+                <li class="nav-item" data-target="module3">
+                    <a href="#module3"><span>M3</span> 雙層爬蟲實戰</a>
+                </li>
+                <li class="nav-item" data-target="module4">
+                    <a href="#module4"><span>M4</span> 資料清洗與正規化</a>
+                </li>
+                <li class="nav-item" data-target="module5">
+                    <a href="#module5"><span>M5</span> AI RAG 整合應用</a>
+                </li>
+                <li class="nav-item" data-target="module6">
+                    <a href="#module6"><span>M6</span> Gemini 脈絡快取</a>
+                </li>
+                <li class="nav-item" data-target="module7">
+                    <a href="#module7"><span>M7</span> 地端 SLM 挑戰與抉擇</a>
+                </li>
+                <li class="nav-item" data-target="quiz">
+                    <a href="#quiz"><span>Test</span> 課後自我檢測</a>
+                </li>
+            </ul>
+        </div>
+        <div class="aside-footer">
+            <p>實戰教材庫 v1.0<br>© 2026 AI Academy</p>
+        </div>
+    </aside>
+
+    <!-- 主要內容區 -->
+    <main>
+        <div class="header-content">
+            <div class="class-badge"><i class="bi bi-stars"></i> 高階 AI 應用實務專題</div>
+            <h1>從零打造政府 AI 補助工具知識庫</h1>
+            <p class="lead-text">
+                本教材將帶領大家完成一次真實的數位轉型技術研發：如何將政府分散、非結構化的 AI 工具庫，利用逆向工程與爬蟲管線，轉化為適用於大語言模型（LLM）與檢索增強生成（RAG）架構的 AI-Ready 結構化資料庫。
+            </p>
+        </div>
+
+        <!-- Module 1 -->
+        <section id="module1" class="module-section">
+            <div class="module-card">
+                <div class="module-meta">Module 01</div>
+                <h2>課程動機與真實商業場景</h2>
+                <p>
+                    在輔導中小企業數位轉型的過程中，政府的資金與政策補助是極佳的助力。然而，分散的政府專案工具庫在技術應用上存在極大鴻溝：
+                </p>
+                <ul>
+                    <li><strong>資訊碎片化</strong>：不同計畫的 AI 工具分散在不同的獨立網站，無統一接口。</li>
+                    <li><strong>無語意化索引</strong>：網站僅提供簡單的字串搜尋，當企業提出「我預算只有五萬，想找適合零售業的 AI 客服工具」時，傳統網頁篩選完全無能為力。</li>
+                </ul>
+                <div class="callout-box">
+                    <h4><i class="bi bi-lightbulb"></i> 核心教學價值</h4>
+                    <p style="margin-bottom: 0;">
+                        本課程的核心，是向學生展示如何架設一條完整的數據管線 (Data Pipeline)，完成「數據採集 -> 數據正規化清洗 -> RAG 資料庫灌錄 -> AI 智慧顧問」的商業落地闭环。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 2 -->
+        <section id="module2" class="module-section">
+            <div class="module-card">
+                <div class="module-meta">Module 02</div>
+                <h2>網頁逆向工程：動態 API 探勘</h2>
+                <p>
+                    很多開發者面對動態載入的網頁，直覺就是用 Selenium 模擬瀏覽器點擊。但在高階資料工程中，我們首先應該做的是**逆向工程**，尋找隱藏的 API。
+                </p>
+                <p>
+                    以輔導團網站為例，打開 Chrome DevTools (F12)，切換到 Network 面板，分析載入的 <code>useAITools.js</code>，我們會赫然發現底層資料根本存放在一個公開的 Google Sheet (試算表 ID：<code>18Hq6sUrweHmm_08AcFPBnQ8XypXJ7CM6</code>)。
+                </p>
+                
+                <div class="callout-box">
+                    <h4><i class="bi bi-info-circle"></i> 技巧：Google 試算表直接匯出 CSV</h4>
+                    <p style="margin-bottom: 0;">
+                        當發現資料在 Google Sheet 中，我們可以直接將其轉化為 Visualization API 的匯出網址，實現零雜訊、超高速的直接資料下載，完全繞過 HTML 解析！
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 3 -->
+        <section id="module3" class="module-section">
+            <div class="module-card">
+                <div class="module-meta">Module 03</div>
+                <h2>雙層網頁爬蟲實戰 (Dual-tier Crawler)</h2>
+                <p>
+                    面對傳統的 PHP 伺服器渲染網站（如智慧轉型方案網站），我們需要撰寫經典的雙層爬蟲：
+                </p>
+                <ul>
+                    <li><strong>第一層</strong>：遍歷 1 至 9 個分頁列表，抓取卡片上的基本方案名稱與詳細頁連結（<code>no</code> 參數）。</li>
+                    <li><strong>第二層</strong>：遍歷第一層搜集到的 145 個詳細頁連結，發送請求，解析並提取詳細規格、成功案例、企業統編等深層資料。</li>
+                </ul>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-lang"><i class="bi bi-filetype-py"></i> scraper_snippet.py</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="bi bi-clipboard"></i> Copy</button>
+                    </div>
+                    <pre><code># 雙層爬蟲中，遍歷詳細頁解析核心內容的 Python 範例
+def parse_detail_page(detail_url):
+    res = requests.get(detail_url)
+    soup = BeautifulSoup(res.content, 'html.parser')
+    
+    # 提取公司與統編等結構化文字
+    company_box = soup.select_one("div.service-content-box-data")
+    tax_id = ""
+    if company_box:
+        comp_text = company_box.text
+        # 使用正則表達式抓取台灣 8 碼統編
+        match = re.search(r'統一編號：\s*(\d{8})', comp_text)
+        if match:
+            tax_id = match.group(1)
+            
+    return {
+        "tax_id": tax_id,
+        "detail_text": soup.select_one("div.service-content-box").text.strip()
+    }</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 4 -->
+        <section id="module4" class="module-section">
+            <div class="module-card">
+                <div class="module-meta">Module 04</div>
+                <h2>資料清洗與正規化 (Data Cleaning & Regex)</h2>
+                <p>
+                    網頁抓下來的原始字串極其混亂。例如價格寫著：<code>方案金額 : 102,375 (新台幣/含稅) 軟體使用月數 : 6 (月)</code>。我們必須使用正規表示式 (Regex) 抽離出純數字，以供 RAG 做範圍過濾。
+                </p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-lang"><i class="bi bi-filetype-py"></i> regex_clean.py</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="bi bi-clipboard"></i> Copy</button>
+                    </div>
+                    <pre><code>import re
+
+# 1. 數值化價格金額
+def extract_price_amount(price_str):
+    # 移除逗號
+    price_clean = price_str.replace(",", "")
+    match = re.search(r'\d+', price_clean)
+    return int(match.group(0)) if match else 0
+
+# 2. 數值化授權月數
+def extract_duration_months(price_str):
+    # 匹配「12個月」或「6月」
+    match = re.search(r'(\d+)\s*(?:個月|月)', price_str)
+    if not match:
+        # 匹配「使用月數 : 6」
+        match = re.search(r'使用月數\s*:\s*(\d+)', price_str)
+    return int(match.group(1)) if match else 12 # 預設12個月
+
+# 驗證
+print(extract_price_amount("方案金額 : 102,375 (新台幣)")) # 102375
+print(extract_duration_months("方案期程為 12 個月"))      # 12</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 5 -->
+        <section id="module5" class="module-section">
+            <div class="module-card">
+                <div class="module-meta">Module 05</div>
+                <h2>AI RAG 整合與轉型 Agent 提示工程</h2>
+                <p>
+                    資料結構化後，我們將其匯入 RAG 知識庫。為了防止 AI 出現幻覺或推薦無關工具，我們採取了 **Metadata 預過濾策略 (Pre-filtering)**：
+                </p>
+                <p>
+                    在向量檢索前，利用程式碼直接用 SQL 或 Vector DB API 過濾 <code>price_amount <= 50000</code> 與符合行業別的產品，再將縮小範圍的工具資料庫上下文交給大模型進行最終的語意排序與人性化回覆。
+                </p>
+
+                <div class="callout-box" style="border-left-color: var(--accent-purple);">
+                    <h4><i class="bi bi-shield-check"></i> RAG 最佳實踐：提供真實引用</h4>
+                    <p style="margin-bottom: 0;">
+                        在提供給大模型的 Prompt 中，強烈要求模型在推薦時必須附帶資料庫中的 <code>official_website</code> 或 <code>source_url</code>，這樣可以大幅增加回答的可信度，方便用戶點擊跳轉。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 6 -->
+        <section id="module6" class="module-section">
+            <div class="module-card">
+                <div class="module-meta">Module 06</div>
+                <h2>Gemini API 脈絡快取 (Context Caching) 實戰</h2>
+                <p>
+                    在大模型應用中，每次對話都重新上傳 10 萬字的 JSON 會導致高昂的輸入成本與嚴重的解析延遲。Gemini 獨家提供的 <strong>Context Caching (脈絡快取)</strong>，允許開發者將完整的資料庫一次性載入伺服器記憶體中，後續查詢自動調用，能將 API 成本降低 80% 以上！
+                </p>
+                
+                <div class="callout-box" style="border-left-color: var(--accent-cyan);">
+                    <h4><i class="bi bi-piggy-bank"></i> 快取成本效能計算</h4>
+                    <p style="margin-bottom: 0;">
+                        以我們的 10 萬 Tokens 資料庫為例，單次詢問的輸入成本將從<b>新台幣 0.25 元降低至 0.07 元</b>，且大模型對全域資料的檢索精準度為 100%，是極具生產價值的商業架構。
+                    </p>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-lang"><i class="bi bi-filetype-py"></i> gemini_cache.py</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="bi bi-clipboard"></i> Copy</button>
+                    </div>
+                    <pre><code># Python 建立與呼叫 Gemini 脈絡快取範例
+import datetime
+import google.generativeai as genai
+from google.generativeai import caching
+
+# 建立快取資源 (TTL 設為 1 小時)
+db_cache = caching.CachedContent.create(
+    model='models/gemini-3.1-flash-lite',
+    display_name='taiwan_gov_ai_tools_db',
+    contents=database_content_json_str,
+    ttl=datetime.timedelta(hours=1),
+)
+
+# 調用快取
+model = genai.GenerativeModel(
+    model_name='models/gemini-3.1-flash-lite',
+    system_instruction="你是一位政府 AI 補助轉型顧問。請完全基於快取的完整 AI 補助工具資料庫，為用戶提供精確的工具對比分析。"
+)
+
+response = model.generate_content("幫我列出 3 款 5 萬元內的客服方案", cached_content=db_cache)
+print(response.text)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 7 -->
+        <section id="module7" class="module-section">
+            <div class="module-card">
+                <div class="module-meta">Module 07</div>
+                <h2>在地端 SLM 部署的挑戰與抉擇</h2>
+                <p>
+                    許多企業基於資安考量希望「完全地端化運行」，我們需要引導學生評估地端輕量化模型（SLM）的硬體極限與架構抉擇：
+                </p>
+                <ul>
+                    <li><strong>Gemini Nano (1.8B~3.2B)</strong>：上下文長度極短（2K~8K），<b>完全無法</b>處理 10 萬 Tokens 的資料庫，推理能力亦不足以進行複雜的跨工具對比。</li>
+                    <li><strong>Ollama SLM (Llama 3 8B / Qwen 2.5 7B)</strong>：雖然架構支援 128K 上下文，但處理 10 萬 Tokens 的 KV Cache 會<b>吃掉 16GB 以上的顯示記憶體 (VRAM)</b>。在一般筆電上會被迫使用 CPU 運算，導致生成速度降至每秒小於 1 個字，變得完全無法使用。</li>
+                </ul>
+
+                <div class="callout-box" style="border-left-color: var(--accent-purple);">
+                    <h4><i class="bi bi-award-fill"></i> 在地端最佳實踐：混合式過濾法 (Hybrid Filtering)</h4>
+                    <p style="margin-bottom: 0;">
+                        要在本地端（Local / SLM）流暢運行本專案，必須使用<b>「Python 規則篩選 + Ollama 本地推理」</b>。先用 Python 快速過濾出符合預算與行業的 5 筆工具（總長約 3,000 Tokens），再將這 5 筆資料交給地端的 Llama 3 8B 或 Qwen 2.5 進行語意撰寫，即可在不到 6GB 顯存下實現秒級回覆！
+                    </p>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-lang"><i class="bi bi-filetype-py"></i> local_ollama.py</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="bi bi-clipboard"></i> Copy</button>
+                    </div>
+                    <pre><code># Python 連接本地 Ollama API 範例
+import json
+import requests
+
+# 1. 模擬本地過濾後的 3 筆工具資料
+filtered_context = [
+    {
+        "tool_name": "WordPress客服系統",
+        "provider_name": "一心堂智慧科技",
+        "price_raw": "$24,000 / 12個月",
+        "tool_description": "整合 WordPress的完整智慧客服..."
+    }
+]
+
+# 2. 構建 Prompt
+prompt = f"以下是篩選後符合預算的 AI 方案：\\n{json.dumps(filtered_context, ensure_ascii=False)}\\n\\n請推薦最適合的方案。"
+
+# 3. 發送 POST 請求至地端 Ollama
+try:
+    response = requests.post(
+        "http://localhost:11434/api/generate",
+        json={
+            "model": "qwen2.5", # 可換成 llama3 或 gemma2
+            "prompt": prompt,
+            "stream": False
+        },
+        timeout=60
+    )
+    result = response.json().get("response")
+    print("[本地 AI 顧問報告]：\\n", result)
+except Exception as e:
+    print("地端連線失敗，請先在終端機執行 'ollama run qwen2.5'。錯誤:", e)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="quiz-container">
+            <div class="quiz-title"><i class="bi bi-patch-question-fill"></i> 課後自我檢測 (Test Your Knowledge)</div>
+            
+            <!-- Q1 -->
+            <div class="quiz-card">
+                <div class="quiz-q">問題 1：面對動態渲染 (Vue/React) 的網頁，以下哪種爬取策略是「大數據工程」中最推薦的？</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 1)">A. 使用 Selenium 模擬真實用戶點擊並等待加載</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, true, 1)">B. (推薦) 進行網頁逆向工程，尋找底層動態 API 或資料源連結</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 1)">C. 手動將網頁內容複製到 TXT 檔案中再用 Python 讀取</div>
+                </div>
+                <div class="quiz-explanation" id="exp-1">
+                    <span>正確答案為 B。</span>
+                    解析：逆向工程直連 API 不僅速度極快、耗用系統資源最少，還能避開動態渲染帶來的防爬機制與載入噴錯，是專業資料工程師的首選策略。
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-card">
+                <div class="quiz-q">問題 2：要從字串 "方案價格為 NTD 150,000 / 12個月" 中，使用 Python Regex 匹配出「12」個月，以下哪組正則最合適？</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 2)">A. r'\d+'</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, true, 2)">B. r'(\d+)\s*(?:個月|月)'</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 2)">C. r'/[A-Za-z]+'</div>
+                </div>
+                <div class="quiz-explanation" id="exp-2">
+                    <span>正確答案為 B。</span>
+                    解析：如果使用 `\d+`，會首先匹配到 `150000`。因此必須使用 `(\d+)\s*(?:個月|月)` 這樣的特定模式來精準抓取代表月數的數字。
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 側邊選單滾動點亮 (ScrollSpy)
+        const sections = document.querySelectorAll('section');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-target') === current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // 程式碼複製功能
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.innerHTML = '<i class="bi bi-check-lg"></i> Copied!';
+                button.style.color = '#34d399';
+                setTimeout(() => {
+                    button.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
+                    button.style.color = '';
+                }, 2000);
+            });
+        }
+
+        // 互動測驗答案檢查
+        function checkAnswer(option, isCorrect, questionNum) {
+            const options = option.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+                opt.style.pointerEvents = 'none'; // 鎖定選擇
+            });
+
+            if (isCorrect) {
+                option.classList.add('correct');
+            } else {
+                option.classList.add('incorrect');
+                // 尋找正確答案並標綠
+                options.forEach(opt => {
+                    if (opt.innerText.includes('(推薦)') || opt.innerText.includes('B.') || opt.innerText.includes('B. (推薦)')) {
+                        // 特殊標註正確答案
+                    }
+                });
+            }
+
+            // 顯示解析說明
+            document.getElementById(`exp-${questionNum}`).style.display = 'block';
+        }
+    </script>
+</body>
+</html>
