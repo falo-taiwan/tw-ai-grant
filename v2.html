@@ -8418,6 +8418,8 @@ ${JSON.stringify(contextTools, null, 2)}
                 loadingText = `AI 助理正在依據篩選出的 ${contextTools.length} 款方案執行您的自訂指令，請稍候...`;
             }
 
+            const container = document.getElementById('ai-response-container');
+            if (container) container.style.display = 'block';
             responseBox.style.display = 'block';
             responseBox.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary);">
