@@ -26,70 +26,68 @@
     <!-- 引入本地端全文檢索庫 MiniSearch -->
     <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"></script>
     <style>
-        /* Unified Smart Search Panel Style for v2.00 */
+        /* v2.00 Sidebar Search Buttons Style */
+        .sidebar-search-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+        }
+        .sidebar-search-btn:hover {
+            background: rgba(6, 182, 212, 0.05);
+            color: var(--accent-cyan);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+        .sidebar-search-btn.active {
+            background: rgba(6, 182, 212, 0.15);
+            color: white;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+            font-weight: 600;
+        }
+
+        /* v2.00 Main Window AI Diagnosis Panel Style */
         .smart-search-container {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(6, 182, 212, 0.04) 100%);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(6, 182, 212, 0.03) 100%);
             border: 1px solid rgba(139, 92, 246, 0.25);
             border-radius: 16px;
             padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
         }
-        .search-bar-row {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            width: 100%;
-        }
         .search-main-input {
             flex-grow: 1;
-            height: 48px;
+            height: 44px;
             background-color: rgba(17, 24, 39, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 0 1.25rem;
+            border-radius: 10px;
+            padding: 0 1rem;
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
             transition: all 0.2s ease;
         }
         .search-main-input:focus {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px var(--glow-cyan);
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);
             background-color: rgba(17, 24, 39, 0.95);
-        }
-        .advanced-toggle-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-secondary);
-            border-radius: 12px;
-            height: 48px;
-            padding: 0 1.25rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .advanced-toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-        .advanced-toggle-btn.active {
-            background: rgba(6, 182, 212, 0.1);
-            color: var(--accent-cyan);
-            border-color: var(--accent-cyan);
         }
         .search-action-btn {
             background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%);
             border: none;
             color: white;
-            border-radius: 12px;
-            height: 48px;
+            border-radius: 10px;
+            height: 44px;
             padding: 0 1.5rem;
             font-weight: 600;
             cursor: pointer;
@@ -107,27 +105,12 @@
         .search-action-btn:active {
             transform: translateY(0);
         }
-        .search-drawer {
-            display: none;
-            margin-top: 1.25rem;
-            padding-top: 1.25rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            animation: slideDown 0.25s ease forwards;
-        }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .drawer-row {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .drawer-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        .search-action-btn:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
 
         :root {
@@ -816,10 +799,16 @@
 
             <!-- Search -->
             <div class="filter-group">
-                <div class="filter-label"><i class="bi bi-search"></i> 關鍵字檢索</div>
-                <div class="search-wrapper">
+                <div class="filter-label"><i class="bi bi-sliders"></i> 智慧條件篩選</div>
+                <div class="search-wrapper" style="margin-bottom: 0.75rem;">
                     <i class="bi bi-search"></i>
-                    <input type="text" id="search-input" class="search-input" placeholder="查詢名稱、廠商或簡介..." autocomplete="off">
+                    <input type="text" id="sidebar-search-input" class="search-input" placeholder="輸入關鍵字或痛點描述..." autocomplete="off">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <button onclick="triggerSidebarSearch('traditional')" class="sidebar-search-btn active" id="btn-search-traditional"><i class="bi bi-search"></i> 關鍵字檢索</button>
+                    <button onclick="triggerSidebarSearch('nlp')" class="sidebar-search-btn" id="btn-search-nlp"><i class="bi bi-magic"></i> 語意條件解析</button>
+                    <button onclick="triggerSidebarSearch('synonyms')" class="sidebar-search-btn" id="btn-search-synonyms"><i class="bi bi-shuffle"></i> 同義詞關聯</button>
+                    <button onclick="triggerSidebarSearch('fuzzy')" class="sidebar-search-btn" id="btn-search-fuzzy"><i class="bi bi-sort-down"></i> 模糊相關度排序</button>
                 </div>
             </div>
 
@@ -860,26 +849,13 @@
                 </div>
             </div>
 
-            <!-- Gemini API Key setting stored locally -->
-            <div class="filter-group" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
-                <div class="filter-label"><i class="bi bi-key-fill"></i> Gemini API Key 設定</div>
-                <div class="search-wrapper">
-                    <i class="bi bi-shield-lock-fill"></i>
-                    <input type="password" id="api-key-input" class="search-input" placeholder="輸入 API 金鑰 (AI Studio)..." style="padding-left: 2.5rem;">
+            <!-- Sidebar Footer / Visible Version Info -->
+            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
+                <div style="font-weight: 600; color: rgba(255,255,255,0.45); font-family: var(--font-title); display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                    <i class="bi bi-patch-check" style="color: var(--accent-cyan);"></i> 智慧檢索與對話診斷系統 v2.00
                 </div>
-                <button onclick="saveApiKey()" class="compare-bar-btn" style="width: 100%; border-radius: 8px; margin-top: 0.5rem; padding: 0.6rem; font-size: 0.85rem;">儲存金鑰</button>
-                <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.25rem; line-height: 1.3;">
-                    * 金鑰儲存於瀏覽器本地 (localStorage)，安全防護，絕不上傳第三方。
-                </div>
-                
-                <!-- Sidebar Footer / Visible Version Info -->
-                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
-                    <div style="font-weight: 600; color: rgba(255,255,255,0.45); font-family: var(--font-title); display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
-                        <i class="bi bi-patch-check" style="color: var(--accent-cyan);"></i> 智慧檢索與對話診斷系統 v2.00
-                    </div>
-                    <div style="margin-top: 0.25rem; color: rgba(255,255,255,0.3);">Falo x Force Cheng</div>
-                    <div style="margin-top: 0.15rem; color: rgba(255,255,255,0.25);">2026/06/24</div>
-                </div>
+                <div style="margin-top: 0.25rem; color: rgba(255,255,255,0.3);">Falo x Force Cheng</div>
+                <div style="margin-top: 0.15rem; color: rgba(255,255,255,0.25);">2026/06/24</div>
             </div>
         </aside>
 
@@ -900,54 +876,36 @@
                 </div>
             </header>
 
-<!-- Unified Smart Search & AI Diagnosis Panel -->
-            <div class="smart-search-container">
-                <div class="search-bar-row">
-                    <input type="text" id="search-input" class="search-main-input" placeholder="輸入關鍵字直接檢索，或展開智慧進階進行語意條件過濾與 AI 診斷..." autocomplete="off">
-                    <button class="advanced-toggle-btn" id="advanced-toggle-btn" onclick="toggleSearchDrawer()">
-                        <i class="bi bi-sliders"></i> <span id="toggle-btn-text">智慧進階</span> <i class="bi bi-chevron-down" id="toggle-chevron"></i>
-                    </button>
-                    <button class="search-action-btn" id="search-action-btn" onclick="executeSmartSearch()">
-                        <i class="bi bi-search"></i> <span id="search-btn-text">智慧檢索</span>
-                    </button>
+            <!-- AI Dialog Panel -->
+            <div class="section-card" style="padding: 1.5rem; margin-bottom: 2.5rem; border: 1px solid rgba(139, 92, 246, 0.25); background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(6, 182, 212, 0.02) 100%);">
+                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAiPanel()">
+                    <h3 style="font-family: var(--font-title); font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: white; border: none; padding: 0;">
+                        <i class="bi bi-robot" style="color: var(--accent-purple); font-size: 1.4rem;"></i> AI 智慧轉型診斷顧問助理
+                    </h3>
+                    <span id="ai-panel-toggle-icon" style="color: var(--text-secondary);"><i class="bi bi-chevron-down"></i></span>
                 </div>
-
-                <!-- Collapsible Advanced Search Drawer -->
-                <div class="search-drawer" id="search-drawer">
-                    <div class="drawer-row" style="margin-bottom: 1rem;">
-                        <div class="drawer-group" style="flex: 1; min-width: 240px;">
-                            <label for="search-mode-select" style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 500;">檢索與診斷技術模式</label>
-                            <select id="search-mode-select" class="sort-select" style="width: 100%; height: 40px; background-color: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: white; padding: 0 0.75rem;" onchange="handleSearchModeChange()">
-                                <option value="traditional">1. 傳統關鍵字比對 (即時過濾)</option>
-                                <option value="nlp-parser">2. 語意條件自動解析 (模式 A - 自動調整篩選面板)</option>
-                                <option value="synonyms">3. 痛點同義詞關聯檢索 (模式 B - 同義詞自動擴充)</option>
-                                <option value="fuzzy-index">4. 相關度評分與容錯檢索 (模式 C - 本地 MiniSearch 引擎)</option>
-                                <option value="ai-consultant">5. AI 智慧轉型診斷顧問 (模式 D - Gemini 3.1 雲端助理)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="drawer-group" id="api-key-group" style="flex: 2; min-width: 300px; display: none;">
-                            <label for="api-key-input-v2" style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 500;">Gemini API Key 設定 (儲存於本地端 localStorage)</label>
-                            <div style="position: relative;">
-                                <i class="bi bi-key" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
-                                <input type="password" id="api-key-input-v2" class="search-main-input" placeholder="請輸入您的 Gemini API 金鑰 (AI Studio)..." style="height: 40px; padding-left: 2.25rem; font-size: 0.9rem;" oninput="syncApiKey(this.value)">
-                            </div>
-                        </div>
+                <div id="ai-panel-content" style="margin-top: 1.25rem; display: none;">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        AI 顧問將讀取您當前篩選出的 <span id="ai-filtered-count" style="color: var(--accent-cyan); font-weight: 600;">0</span> 款 AI 方案作為知識庫背景，為您撰寫客製化導入建議書。
+                    </p>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <input type="text" id="ai-prompt-input" class="search-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1;" autocomplete="off">
+                        <button onclick="askAiConsultant()" class="compare-bar-btn" id="ai-send-btn" style="border-radius: 12px; padding: 0 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; height: 46px;">
+                            <span id="ai-btn-text">生成報告</span> <i class="bi bi-send-fill"></i>
+                        </button>
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-                        <div style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4;" id="mode-helper-text">
-                            * 目前模式：傳統關鍵字比對。隨打隨動，對下方工具列表進行即時過濾。
-                        </div>
+                    <!-- History Toggle and Counter -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <button onclick="toggleAiHistoryPanel()" class="compare-bar-btn" id="ai-history-toggle-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; height: auto; display: flex; align-items: center; gap: 0.35rem; color: var(--text-secondary); transition: all 0.2s;">
                             <i class="bi bi-clock-history" style="color: var(--accent-cyan);"></i> 歷程紀錄 (<span id="ai-history-count">0</span>)
                         </button>
                     </div>
 
                     <!-- AI History List Panel -->
-                    <div id="ai-history-list-panel" style="display: none; background-color: rgba(5, 7, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.2rem; margin-top: 1rem; max-height: 250px; overflow-y: auto; border-left: 3px solid var(--accent-cyan);">
+                    <div id="ai-history-list-panel" style="display: none; background-color: rgba(5, 7, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; max-height: 250px; overflow-y: auto; border-left: 3px solid var(--accent-cyan);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem;">
-                            <span style="font-size: 0.85rem; color: white; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> 歷史對話與診斷紀錄</span>
+                            <span style="font-size: 0.85rem; color: white; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> 歷史診斷紀錄</span>
                             <button onclick="clearAllAiHistory()" class="compare-bar-btn" style="background: transparent; border: none; color: var(--accent-red); padding: 0; font-size: 0.75rem; height: auto; display: flex; align-items: center; gap: 0.25rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                                 <i class="bi bi-trash3-fill"></i> 清空全部
                             </button>
@@ -956,12 +914,11 @@
                             <!-- History items will be rendered here -->
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- AI Diagnosis Response Box -->
-            <div id="ai-response-box" style="background-color: #05070c; border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 1.5rem; min-height: 80px; max-height: 500px; overflow-y: auto; display: none; font-size: 0.95rem; line-height: 1.7; color: #e2e8f0; border-left: 3px solid var(--accent-purple); position: relative; margin-bottom: 2.5rem;">
-                <!-- AI Response content rendered here -->
+                    <div id="ai-response-box" style="background-color: #05070c; border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 1.5rem; min-height: 80px; max-height: 500px; overflow-y: auto; display: none; font-size: 0.95rem; line-height: 1.7; color: #e2e8f0; border-left: 3px solid var(--accent-purple); position: relative;">
+                        <!-- AI Response content rendered here -->
+                    </div>
+                </div>
             </div>
 
             <!-- Cards Grid -->
@@ -6801,15 +6758,16 @@
         // Active State
         let filteredData = [...TOOLS_DATA];
         let selectedForCompare = [];
-        let isAiPanelOpen = false;
         let miniSearch;
+        let currentSearchMode = 'traditional'; // 'traditional', 'nlp', 'synonyms', 'fuzzy'
 
         // Dom Elements Cache
-        const searchInput = document.getElementById('search-input');
+        const sidebarSearchInput = document.getElementById('sidebar-search-input');
         const priceSlider = document.getElementById('price-slider');
         const sortSelect = document.getElementById('sort-select');
         const cardsGrid = document.getElementById('cards-grid');
         const toolsCount = document.getElementById('tools-count');
+        const aiFilteredCount = document.getElementById('ai-filtered-count');
         const compareBar = document.getElementById('compare-bar');
         const compareCount = document.getElementById('compare-count');
         const compareBtn = document.getElementById('compare-btn');
@@ -6909,134 +6867,58 @@
             return results;
         }
 
-        // Drawer toggle animations
-        function toggleSearchDrawer() {
-            const drawer = document.getElementById('search-drawer');
-            const btn = document.getElementById('advanced-toggle-btn');
-            const chevron = document.getElementById('toggle-chevron');
+        // Trigger search by clicking sidebar buttons
+        function triggerSidebarSearch(mode) {
+            currentSearchMode = mode;
             
-            if (drawer && btn && chevron) {
-                const isHidden = drawer.style.display === 'none' || !drawer.style.display;
-                if (isHidden) {
-                    drawer.style.display = 'block';
-                    btn.classList.add('active');
-                    chevron.className = 'bi bi-chevron-up';
-                } else {
-                    drawer.style.display = 'none';
-                    btn.classList.remove('active');
-                    chevron.className = 'bi bi-chevron-down';
+            // Update active button classes
+            const buttons = ['traditional', 'nlp', 'synonyms', 'fuzzy'];
+            buttons.forEach(btn => {
+                const element = document.getElementById(`btn-search-${btn}`);
+                if (element) {
+                    if (btn === mode) {
+                        element.classList.add('active');
+                    } else {
+                        element.classList.remove('active');
+                    }
+                }
+            });
+
+            const query = sidebarSearchInput.value.trim().toLowerCase();
+
+            // Under Heuristic NLP (Mode A), programmatically adjust filters before filtering
+            if (mode === 'nlp' && query) {
+                const nlpResult = nlpParser(query);
+                
+                if (nlpResult.industry) {
+                    // Check only matching industry and uncheck others
+                    const checkElements = document.querySelectorAll('input[type="checkbox"][value^="G"], input[type="checkbox"][value^="I"], input[type="checkbox"][value^="H"], input[type="checkbox"][value^="J"], input[type="checkbox"][value^="M"], input[type="checkbox"][value^="S"]');
+                    checkElements.forEach(cb => {
+                        cb.checked = (cb.value === nlpResult.industry);
+                    });
+                }
+                
+                if (nlpResult.budget) {
+                    priceSlider.value = nlpResult.budget;
+                    document.getElementById('price-val').innerText = nlpResult.budget >= 300000 ? "全部價格" : `$${nlpResult.budget.toLocaleString()}`;
                 }
             }
+
+            // Run unified filter and update list
+            filterData();
         }
 
-        // Sync API Key between elements
+        // Sync API Key
         function syncApiKey(val) {
             localStorage.setItem('gemini_api_key', val);
-            const sidebarKey = document.getElementById('api-key-input');
-            if (sidebarKey) sidebarKey.value = val;
             const drawerKey = document.getElementById('api-key-input-v2');
             if (drawerKey) drawerKey.value = val;
         }
 
-        // Handle Search Mode change
-        function handleSearchModeChange() {
-            const mode = document.getElementById('search-mode-select').value;
-            const apiKeyGroup = document.getElementById('api-key-group');
-            const searchBtnText = document.getElementById('search-btn-text');
-            const searchBtnIcon = document.querySelector('#search-action-btn i');
-            const helper = document.getElementById('mode-helper-text');
-            
-            if (mode === 'ai-consultant') {
-                if (apiKeyGroup) apiKeyGroup.style.display = 'flex';
-                if (searchBtnText) searchBtnText.innerText = "生成 AI 報告";
-                if (searchBtnIcon) searchBtnIcon.className = "bi bi-robot";
-                if (helper) {
-                    helper.innerHTML = `* 目前模式：AI 智慧轉型診斷顧問。讀取目前篩選出的方案作為背景知識，撰寫客製化導入建議書。`;
-                }
-            } else {
-                if (apiKeyGroup) apiKeyGroup.style.display = 'none';
-                if (searchBtnText) searchBtnText.innerText = "智慧檢索";
-                if (searchBtnIcon) searchBtnIcon.className = "bi bi-search";
-                
-                if (helper) {
-                    if (mode === 'traditional') {
-                        helper.innerHTML = `* 目前模式：傳統關鍵字比對。隨打隨動，對下方工具列表進行即時過濾。`;
-                    } else if (mode === 'nlp-parser') {
-                        helper.innerHTML = `* 目前模式：語意條件自動解析。輸入句子時，自動解析「行業與預算」並操作側邊欄篩選面板。`;
-                    } else if (mode === 'synonyms') {
-                        helper.innerHTML = `* 目前模式：痛點同義詞關聯檢索。字詞自動擴充（例如輸入「漏單」會關聯「點餐、POS、餐飲」進行廣度搜尋）。`;
-                    } else if (mode === 'fuzzy-index') {
-                        helper.innerHTML = `* 目前模式：模糊相關度排序。使用本地 MiniSearch 全文檢索，依加權相關度評分排序（支援拼寫容錯）。`;
-                    }
-                }
-            }
-            
-            if (mode !== 'ai-consultant') {
-                executeSmartSearch();
-            }
-        }
-
-        // Unified Search execution router
-        function executeSmartSearch() {
-            const mode = document.getElementById('search-mode-select').value;
-            const query = searchInput.value.trim().toLowerCase();
-            
-            if (mode === 'traditional') {
-                filterData();
-                return;
-            }
-            
-            if (mode === 'nlp-parser') {
-                if (query) {
-                    const nlpResult = nlpParser(query);
-                    let nlpLogged = "";
-                    
-                    if (nlpResult.industry) {
-                        const checkElements = document.querySelectorAll('input[type="checkbox"][value^="G"], input[type="checkbox"][value^="I"], input[type="checkbox"][value^="H"], input[type="checkbox"][value^="J"], input[type="checkbox"][value^="M"], input[type="checkbox"][value^="S"]');
-                        checkElements.forEach(cb => {
-                            cb.checked = (cb.value === nlpResult.industry);
-                        });
-                        nlpLogged += `[行業 → ${nlpResult.industry}] `;
-                    }
-                    
-                    if (nlpResult.budget) {
-                        priceSlider.value = nlpResult.budget;
-                        document.getElementById('price-val').innerText = nlpResult.budget >= 300000 ? "全部價格" : `$${nlpResult.budget.toLocaleString()}`;
-                        nlpLogged += `[預算限制 → $${nlpResult.budget.toLocaleString()}]`;
-                    }
-                    
-                    const helper = document.getElementById('mode-helper-text');
-                    if (helper) {
-                        helper.innerHTML = nlpLogged 
-                            ? `* 語意解析成功：<span style="color: var(--accent-cyan); font-weight: 500;">${nlpLogged}</span>，已自動套用篩選。`
-                            : `* 語意未匹配到行業或預算關鍵字。請嘗試輸入例如：「我是餐飲業預算五萬」...`;
-                    }
-                }
-                filterData();
-                return;
-            }
-            
-            if (mode === 'synonyms') {
-                filterData();
-                return;
-            }
-            
-            if (mode === 'fuzzy-index') {
-                filterData();
-                return;
-            }
-            
-            if (mode === 'ai-consultant') {
-                askAiConsultant();
-                return;
-            }
-        }
-
         // Active filters and render logic
         function filterData() {
-            const query = searchInput.value.trim().toLowerCase();
+            const query = sidebarSearchInput.value.trim().toLowerCase();
             const maxPrice = parseInt(priceSlider.value);
-            const mode = document.getElementById('search-mode-select').value;
             
             const selectedCats = Array.from(document.querySelectorAll('input[type="checkbox"][value]:checked'))
                 .filter(cb => !cb.value.startsWith("工業館") && !cb.value.startsWith("Tcloud") && !cb.value.startsWith("共契") && !cb.value.includes("G批發") && !cb.value.includes("I住宿") && !cb.value.includes("H運輸") && !cb.value.includes("J出版") && !cb.value.includes("M專業") && !cb.value.includes("S其他"))
@@ -7053,7 +6935,7 @@
             filteredData = TOOLS_DATA.filter(item => {
                 let matchesQuery = true;
                 if (query) {
-                    if (mode === 'synonyms') {
+                    if (currentSearchMode === 'synonyms') {
                         let expandedKeywords = [query];
                         for (const key in SYNO_MAP) {
                             if (query.includes(key) || key.includes(query)) {
@@ -7066,10 +6948,11 @@
                             (item.tool_description && item.tool_description.toLowerCase().includes(kw)) ||
                             (item.success_cases && item.success_cases.toLowerCase().includes(kw))
                         );
-                    } else if (mode === 'fuzzy-index') {
+                    } else if (currentSearchMode === 'fuzzy') {
                         // Let MiniSearch handle it downstream
                         matchesQuery = true;
                     } else {
+                        // 'traditional' and 'nlp' (which falls back to standard keyword for matching if checkboxes are set)
                         matchesQuery = 
                             item.tool_name.toLowerCase().includes(query) || 
                             item.provider_name.toLowerCase().includes(query) || 
@@ -7096,24 +6979,20 @@
                 return matchesQuery && matchesCat && matchesSource && matchesInd && matchesPrice;
             });
 
-            // Parse local scoring indexing
-            if (mode === 'fuzzy-index' && query) {
+            // Parse local scoring indexing for fuzzy mode
+            if (currentSearchMode === 'fuzzy' && query) {
                 const searchResults = miniSearch.search(query);
                 const scoreMap = new Map(searchResults.map(r => [r.id, r.score]));
                 
                 filteredData = filteredData.filter(item => scoreMap.has(item.id));
                 filteredData.sort((a, b) => scoreMap.get(b.id) - scoreMap.get(a.id));
-                
-                const helper = document.getElementById('mode-helper-text');
-                if (helper) {
-                    helper.innerHTML = `* 模糊相關度檢索：已找到 <span style="color: var(--accent-cyan); font-weight: 500;">${filteredData.length}</span> 筆相關方案，已按關聯性評分由高到低排序。`;
-                }
             } else {
                 sortData();
             }
 
             // Sync counts
             toolsCount.innerText = filteredData.length;
+            if (aiFilteredCount) aiFilteredCount.innerText = filteredData.length;
             renderCards();
         }
 
@@ -7410,7 +7289,7 @@
             const item = history.find(x => x.id === id);
             if (!item) return;
             
-            searchInput.value = item.query;
+            document.getElementById('ai-prompt-input').value = item.query;
             currentReportText = item.responseText;
             currentReportQuery = item.query;
             
@@ -7485,7 +7364,7 @@
             const toolbarHtml = `
                 <div id="ai-response-toolbar" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
                     <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
-                        <i class="bi bi-file-earmark-text"></i> 診斷分析報告
+                        <i class="bi bi-file-earmark-text"></i> 轉型診斷分析建議書
                     </span>
                     <div style="display: flex; gap: 0.5rem;">
                         <button onclick="copyAiReport()" class="compare-bar-btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 0.35rem 0.7rem; font-size: 0.75rem; height: auto; display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer;">
@@ -7521,7 +7400,7 @@
         function copyAiReport() {
             if (!currentReportText) return;
             navigator.clipboard.writeText(currentReportText).then(() => {
-                alert("診斷報告已成功複製到剪貼簿！");
+                alert("建議書已成功複製到剪貼簿！");
             }).catch(err => {
                 alert("複製失敗：" + err);
             });
@@ -7623,30 +7502,25 @@
             }
         }
 
-        // Ask AI Consultant - Direct Serverless Gemini API Call (Mode D)
+        // Ask AI Consultant - Direct Serverless Gemini API Call (RAG based on filteredData)
         async function askAiConsultant() {
             const apiKey = localStorage.getItem('gemini_api_key');
             if (!apiKey) {
-                alert("請先在「檢索與診斷模式」中選擇「AI 智慧轉型診斷顧問」，並於右側輸入您的 Gemini API 金鑰！");
-                // Open drawer to help them find the field
-                const drawer = document.getElementById('search-drawer');
-                if (drawer && drawer.style.display === 'none') {
-                    toggleSearchDrawer();
-                }
+                alert("請先在 AI 智慧轉型診斷面板底部的「Gemini API Key」輸入框中設定您的 API 金鑰！");
                 return;
             }
 
-            const userQuery = searchInput.value.trim();
+            const userQuery = document.getElementById('ai-prompt-input').value.trim();
             if (!userQuery) {
-                alert("請先在主搜尋框中輸入您的轉型痛點描述！");
+                alert("請先在 AI 診斷對話框中輸入您的公司轉型痛點描述！");
                 return;
             }
 
-            const sendBtn = document.getElementById('search-action-btn');
-            const btnText = document.getElementById('search-btn-text');
+            const sendBtn = document.getElementById('ai-send-btn');
+            const btnText = document.getElementById('ai-btn-text');
             const responseBox = document.getElementById('ai-response-box');
 
-            // Prepare context (take top 15 tools max to stay efficient)
+            // Prepare context (take top 15 filtered tools max to stay efficient)
             const contextTools = filteredData.slice(0, 15).map(t => ({
                 tool_name: t.tool_name,
                 provider_name: t.provider_name,
@@ -7658,18 +7532,18 @@
 
             const prompt = `
 你是一位專業的政府 AI 補助數位轉型顧問。
-以下是篩選後符合業主預算與行業條件的核定 AI 補助方案清單：
+以下是業主篩選後符合其預算與行業條件的核定 AI 補助方案清單：
 ${JSON.stringify(contextTools, null, 2)}
 
 業主的實際轉型痛點描述如下：
 「${userQuery}」
 
-請針對業主的痛點，從上方清單中挑選最適合的 1~3 款工具方案，撰寫一份高水準的「數位轉型工具導入建議書」。
+請針對業主的痛點，從上方篩選後的清單中挑選最適合的 1~3 款工具方案，撰寫一份高水準的「數位轉型工具導入建議書」。
 建議書必須包含：
 1. 痛點剖析：簡述為何這些工具能解決其痛點。
 2. 工具推薦：以 Markdown 表格呈現推薦工具，包含「方案名稱」、「廠商名稱」、「價格期程」、以及「核心推薦理由」。
 3. 預期轉型效益與成效指標。
-4. 補助申請引導：特別列出 source_url 連結方便業主跳轉申請。
+4. 補助申請引導：特別列出 source_url 連結方便業主點擊跳轉進行申請。
 請使用繁體中文回答，語氣要專業、務實。
 `;
 
@@ -7680,7 +7554,7 @@ ${JSON.stringify(contextTools, null, 2)}
             responseBox.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary);">
                     <i class="bi bi-arrow-repeat" style="font-size: 1.3rem; animation: spin 1.5s linear infinite;"></i>
-                    AI 顧問正在研讀 ${contextTools.length} 款 AI 方案規格，並為您規劃最佳轉型路徑，請稍候...
+                    AI 顧問正在研讀您篩選出的 ${contextTools.length} 款 AI 方案規格，並為您規劃最佳轉型路徑，請稍候...
                 </div>
                 <style>
                     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -7725,7 +7599,7 @@ ${JSON.stringify(contextTools, null, 2)}
                 <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">請確認您的 Gemini API 金鑰輸入無誤，且您的網路連線正常。</div>`;
             } finally {
                 sendBtn.disabled = false;
-                btnText.innerText = "生成 AI 報告";
+                btnText.innerText = "生成轉型建議書";
             }
         }
 
@@ -7807,13 +7681,13 @@ ${JSON.stringify(contextTools, null, 2)}
             if (catContainer) {
                 catContainer.innerHTML = categories.map(cat => `
                     <label class="filter-checkbox-label">
-                        <input type="checkbox" value="${cat}" onchange="filterData()">
+                        <input type="checkbox" value="${cat}">
                         <span>${cat}</span>
                     </label>
                 `).join('');
             }
             
-            // Add listeners to checkboxes in industries and sources
+            // Add listeners to checkboxes in categories, industries and sources to filter on change
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                 cb.addEventListener('change', filterData);
             });
@@ -7826,20 +7700,11 @@ ${JSON.stringify(contextTools, null, 2)}
             if (e.target === detailModal) closeDetailModal();
             if (e.target === compareModal) closeCompareModal();
         });
-
-        // Search inputs listeners
-        searchInput.addEventListener('input', () => {
-            const mode = document.getElementById('search-mode-select').value;
-            // For modes 1-4, do real-time search on typing
-            if (mode !== 'ai-consultant') {
-                executeSmartSearch();
-            }
-        });
         
-        // Let Enter trigger executeSmartSearch (especially for Mode A and Mode D)
-        searchInput.addEventListener('keydown', (e) => {
+        // Let Enter trigger search in sidebar input
+        sidebarSearchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                executeSmartSearch();
+                triggerSidebarSearch(currentSearchMode);
             }
         });
 
@@ -7864,7 +7729,8 @@ ${JSON.stringify(contextTools, null, 2)}
         // Restore and sync API Key
         const storedKey = localStorage.getItem('gemini_api_key');
         if (storedKey) {
-            syncApiKey(storedKey);
+            const drawerKey = document.getElementById('api-key-input-v2');
+            if (drawerKey) drawerKey.value = storedKey;
         }
     </script>
 
