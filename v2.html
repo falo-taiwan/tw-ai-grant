@@ -8338,18 +8338,13 @@ ${JSON.stringify(contextTools, null, 2)}
 `;
             } else {
                 prompt = `
-幕僚數位轉型助理。
-以下是目前業主在前端篩選出的核定 AI 補助方案清單（作為你的背景知識庫）：
+【背景知識庫（供參考，若使用者的指令與此無關，請完全忽略）】
+目前篩選出的核定 AI 補助方案清單如下：
 ${JSON.stringify(contextTools, null, 2)}
 
-【核心任務】
-使用者（業主）對你提出了一個「自訂指令或具體問題」：
+【使用者自訂指令】
+請完全依據以下使用者輸入的指令、問題、語氣與格式要求進行回覆（你可以自由運用上方的背景知識庫進行回答，若指令與清單無關，則可完全忽略背景知識庫，直接回答指令內容）：
 「${userQuery}」
-
-請完全依據使用者的自訂指令或問題進行回答。你可以自由運用上方提供的方案清單作為你的知識庫，並且「完全遵循使用者所要求的格式、語氣、結構與任何限制」來回答。
-不要被傳統的「建議書」格式限制，使用者要你做什麼，你就做什麼（例如：進行特定維度比對、撰寫時程表、做數據統計、或者僅是針對特定方案進行問答，甚至是寫一首關於這些方案的詩）。
-為了確保回答結構完整且不被輸出字數限制截斷，若涉及多個方案，請以精煉的格式呈現，並保持內容「簡潔有力、直擊要害」。
-請使用繁體中文回答，語氣要專業、務實。
 `;
             }
 
@@ -8583,17 +8578,6 @@ ${JSON.stringify(contextTools, null, 2)}
             sortData();
             renderCards();
         });
-
-        // Textarea Enter Key handling
-        const promptInput = document.getElementById('ai-prompt-input');
-        if (promptInput) {
-            promptInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    askAiConsultant('recommended');
-                }
-            });
-        }
 
         // On Load initialization
         initFilters();

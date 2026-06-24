@@ -806,9 +806,9 @@
                     <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
                         AI 顧問將讀取您當前篩選出的 <span id="ai-filtered-count" style="color: var(--accent-cyan); font-weight: 600;">0</span> 款 AI 方案作為知識庫背景，為您撰寫客製化導入建議書。
                     </p>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <input type="text" id="ai-prompt-input" class="search-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1;" autocomplete="off">
-                        <button onclick="askAiConsultant()" class="compare-bar-btn" id="ai-send-btn" style="border-radius: 12px; padding: 0 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; height: 46px;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+                        <textarea id="ai-prompt-input" class="search-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1; height: 60px; resize: none; line-height: 1.5; padding: 0.55rem 0.85rem; border-radius: 12px; font-family: inherit; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; outline: none;" autocomplete="off"></textarea>
+                        <button onclick="askAiConsultant()" class="compare-bar-btn" id="ai-send-btn" style="border-radius: 12px; padding: 0 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; height: 46px; flex-shrink: 0;">
                             <span id="ai-btn-text">生成報告</span> <i class="bi bi-send-fill"></i>
                         </button>
                     </div>
