@@ -781,6 +781,25 @@ except Exception as e:
                         </li>
                     </ol>
                 </div>
+
+                <div class="callout-box" style="border-left-color: var(--accent-orange); margin-top: 1.5rem;">
+                    <h4><i class="bi bi-shield-lock-fill"></i> ⚠️ 深度案例分析：本專案資料源之資安與防爬蟲漏洞剖析</h4>
+                    <p>
+                        本專案採集的兩個政府補助工具庫網站，在業界資安防禦標準中，防護與防爬蟲（Anti-Crawling）設計均存在顯著漏洞：
+                    </p>
+                    <ul style="margin-top: 0.5rem; margin-bottom: 0.5rem; padding-left: 1.2rem; line-height: 1.6;">
+                        <li><strong>來源一（公開 Google Sheet 漏洞）</strong>：將底層資料庫直接存放在公開的 Google Sheet 中，並在前端 JS 代碼中暴露了 Sheet ID。這導致政府伺服器對爬蟲流量<b>完全失去感知與監控能力</b>，無法實施 IP 限速或封鎖防禦，且極易外洩內部不慎放入試算表的敏感聯絡資訊。</li>
+                        <li><strong>來源二（自增整數 ID 與掃庫漏洞）</strong>：詳細頁使用遞增 ID（如 <code>no=35</code>）且未設置任何速率限制（Rate Limiting）。這使得爬蟲可利用簡單迴圈進行「暴力遍歷掃庫（ID Enumeration）」，並可能引發 <b>BOLA（失效的物件層級授權）</b> 漏洞，越權存取商家未公開的申請草稿與個資。</li>
+                        <li><strong>資安防禦最佳實踐（API 安全四道防線）</strong>：
+                            <ol style="margin-top: 0.25rem; padding-left: 1.2rem;">
+                                <li><strong>第一道防線 (WAF)</strong>：部署 Cloudflare，識別爬蟲特徵與異常頻率並自動彈出人機驗證（reCAPTCHA）或封鎖。</li>
+                                <li><strong>第二道防線 (動態簽章)</strong>：前端異步請求須攜帶動態計算的加密令牌與時間戳，防止爬蟲直連後台 API。</li>
+                                <li><strong>第三道防線 (UUID 隨機化)</strong>：將自增 ID 改為隨機 UUID，徹底瓦解爬蟲的遍歷計畫。</li>
+                                <li><strong>第四道防線 (敏感個資遮蔽)</strong>：對 Email、電話與公司統編等個資進行遮蔽（如 <code>te**@company.com</code>），通過人機驗證後才延遲加載。</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </section>
 
