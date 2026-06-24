@@ -492,12 +492,57 @@
                 <div class="module-meta">Module 01</div>
                 <h2>課程動機與真實商業場景</h2>
                 <p>
-                    在輔導中小企業數位轉型的過程中，政府的資金與政策補助是極佳的助力。然而，分散的政府專案工具庫在技術應用上存在極大鴻溝：
+                    在政府積極輔導台灣中小企業進行數位轉型的政策下，各部會編列了優渥的政策補助預算，核定了上百款優質的 AI 工具方案。然而，對於中小企業主與企業數位轉型顧問而言，在實際應用與決策過程中，面臨了兩大資訊鴻溝：
                 </p>
                 <ul>
-                    <li><strong>資訊碎片化</strong>：不同計畫的 AI 工具分散在不同的獨立網站，無統一接口。</li>
-                    <li><strong>無語意化索引</strong>：網站僅提供簡單的字串搜尋，當企業提出「我預算只有五萬，想找適合零售業的 AI 客服工具」時，傳統網頁篩選完全無能為力。</li>
+                    <li><strong>政令宣導分散與資訊碎片化 (Information Fragmentation)</strong>：經濟部不同計畫與署別核定的 AI 補助工具，分散在各自獨立運營的入口網站中。企業若想進行橫向對比，必須在不同網站間反覆跳轉，手動記錄並自行交叉比對，導致決策成本極高。</li>
+                    <li><strong>分類架構不對稱與傳統檢索失效 (Search Wall)</strong>：不同入口網站採用的行業分類、方案標籤、甚至價格期程的欄位結構完全不一致。且網站僅提供簡單的「關鍵字字串精確匹配」，當企業提出如「<i>我是手搖飲料店，預算 5 萬元左右，想找適合的收銀與 LINE 客服 AI 工具</i>」這種真實語意痛點時，傳統網頁的篩選器與關鍵字搜尋完全無能為力。</li>
                 </ul>
+
+                <div class="callout-box" style="border-left-color: var(--accent-purple); margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                    <h4><i class="bi bi-diagram-3-fill"></i> 兩大官方核心資料庫之整合運用價值</h4>
+                    <p>
+                        本專案的核心動機，在於將分散於兩大部會專案的官方核定補助資料庫進行<b>深度整合、統一清洗與正規化對齊</b>，消除政策壁壘，實現單一窗口化檢索：
+                    </p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(255,255,255,0.1); text-align: left;">
+                                <th style="padding: 0.5rem; color: white;">原始官方入口網站</th>
+                                <th style="padding: 0.5rem; color: white;">計畫主管機關與定位</th>
+                                <th style="padding: 0.5rem; color: white;">整合運用價值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 0.5rem;">
+                                    <a href="https://eii.nat.gov.tw/moeai-plus/ai-tools" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">
+                                        <i class="bi bi-box-arrow-up-right"></i> 經濟部產發署 AI 工具專區
+                                    </a>
+                                </td>
+                                <td style="padding: 0.5rem;">經濟部產業發展署 (專注製造業與中大型核心技術)</td>
+                                <td style="padding: 0.5rem;">提供高技術門檻的 AI 軟體與演算法模組資料。</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 0.5rem;">
+                                    <a href="https://www.smebiz.org.tw/service-ai.php" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">
+                                        <i class="bi bi-box-arrow-up-right"></i> 中小企業數位轉型入口網 (SMEBiz)
+                                    </a>
+                                </td>
+                                <td style="padding: 0.5rem;">經濟部中小及新創企業署 (專注商務、零售與餐飲服務業)</td>
+                                <td style="padding: 0.5rem;">提供豐富的商務行銷、POS 客服與日常辦公輕量化軟體。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout-box" style="border-left-color: var(--accent-cyan); margin-bottom: 1.5rem;">
+                    <h4><i class="bi bi-briefcase-fill"></i> 真實商業應用場景 (Business Scenarios)</h4>
+                    <p style="line-height: 1.6;">
+                        <strong>【場景：AI 數位轉型顧問的秒級提案】</strong><br>
+                        傳統數位轉型顧問在面對一家中小企業客戶時，需要先訪談客戶痛點，接著花費數天甚至數週的時間，去各個政府補助網站翻閱上百頁 PDF 方案，手動核對價格、確認是否符合補助資格，最後撰寫成 PPT 建議書。而透過本專案整合後的「AI 智慧診斷顧問平台」，顧問只需在客戶面前<strong>輸入訪談文字（痛點）</strong>，系統會自動在毫秒內過濾兩大資料源，以 TF-IDF/語意檢索精選最契合的方案，並由大語言模型（LLM）<strong>在 10 秒內生成一份結構嚴緊、包含價格、補助連結且排版精美的轉型建議書</strong>，大幅提升顧問服務的時效與提案轉化率。
+                    </p>
+                </div>
+
                 <div class="callout-box">
                     <h4><i class="bi bi-lightbulb"></i> 核心教學價值</h4>
                     <p style="margin-bottom: 0;">
