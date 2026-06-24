@@ -880,6 +880,55 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- AI Model Selector & Ollama Settings (V1 Parity) -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; margin-top: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 260px; flex-grow: 1;">
+                            <label for="model-select-v1" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">AI 診斷模型：</label>
+                            <select id="model-select-v1" class="search-input" style="height: 34px; font-size: 0.82rem; padding: 0 1.75rem 0 0.75rem; background-color: rgba(17, 24, 39, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white; cursor: pointer; outline: none; transition: all 0.2s; appearance: auto; flex-grow: 1;">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="gemini-3.1-flash-lite" selected>Gemini 3.1 Flash-Lite (預設)</option>
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                                <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+                                <option value="ollama">Ollama (本地/外部模型)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Ollama Local/External LLM Configurations (V1 Parity) -->
+                    <div id="ollama-config-row-v1" style="display: none; margin-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 0.75rem; padding-bottom: 0.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; width: 100%;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; flex-grow: 1; width: 100%;">
+                            <!-- IP Input -->
+                            <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 200px; flex-grow: 1;">
+                                <label for="ollama-ip-input-v1" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Ollama IP：</label>
+                                <input type="text" id="ollama-ip-input-v1" class="search-input" value="192.168.31.202" placeholder="例如 192.168.31.202..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 100px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; border-radius: 8px;">
+                            </div>
+                            <!-- Port Input -->
+                            <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 120px;">
+                                <label for="ollama-port-input-v1" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Port：</label>
+                                <input type="text" id="ollama-port-input-v1" class="search-input" value="11434" placeholder="預設 11434..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; width: 80px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; border-radius: 8px;">
+                            </div>
+                            <!-- Model Name Input -->
+                            <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 180px; flex-grow: 1;">
+                                <label for="ollama-model-input-v1" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">模型名稱：</label>
+                                <input type="text" id="ollama-model-input-v1" list="ollama-model-list-v1" class="search-input" value="gemma4:e2b" placeholder="例如 gemma4:e2b, gemma4:e4b..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 100px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; border-radius: 8px;">
+                                <datalist id="ollama-model-list-v1">
+                                    <option value="gemma4:e2b"></option>
+                                    <option value="gemma4:e4b"></option>
+                                    <option value="qwen3-vl:4b"></option>
+                                    <option value="llama3"></option>
+                                    <option value="gemma2"></option>
+                                    <option value="qwen2.5"></option>
+                                </datalist>
+                            </div>
+                        </div>
+                        <!-- Muted Hints -->
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); width: 100%; margin-top: 0.25rem; line-height: 1.4; display: flex; flex-direction: column; gap: 0.15rem;">
+                            <span>* 提示：Ollama 設定採臨時輸入（重整網頁即恢復預設，不進行本地儲存），便於連接外部伺服器。</span>
+                            <span>* 若連線失敗，請確保本地 Ollama 已啟動，且環境變數設定 <code>OLLAMA_ORIGINS="*"</code> 以允許 CORS 跨網域請求。</span>
+                        </div>
+                    </div>
+                    
                     
                     <!-- History Toggle and Counter -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -6966,6 +7015,7 @@
         // AI Report History and Export state
         let currentReportText = '';
         let currentReportQuery = '';
+        let currentReportTokenData = null;
 
         function getHistory() {
             const histStr = localStorage.getItem('gemini_consultation_history');
@@ -6996,7 +7046,8 @@
                 query: query,
                 responseText: responseText,
                 filteredCount: filteredCount,
-                mode: mode
+                mode: mode,
+                tokenData: currentReportTokenData
             };
             
             history.unshift(newItem);
@@ -7024,6 +7075,15 @@
                     ? `<span style="background: rgba(6, 182, 212, 0.15); border: 1px solid var(--accent-cyan); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: #22d3ee; margin-left: 0.35rem;">自訂</span>`
                     : `<span style="background: rgba(139, 92, 246, 0.15); border: 1px solid var(--accent-purple); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: #c084fc; margin-left: 0.35rem;">精選</span>`;
 
+                let tokenBadgeHtml = "";
+                if (item.tokenData) {
+                    const totalTokens = item.tokenData.totalTokens || 0;
+                    const costText = item.tokenData.model === 'ollama' 
+                        ? 'Ollama免費' 
+                        : `NT$${(item.tokenData.costTWD || 0).toFixed(4)}`;
+                    tokenBadgeHtml = `<span style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan); margin-left: 0.35rem;">Token: ${(totalTokens/1000).toFixed(1)}k (${costText})</span>`;
+                }
+
                 return `
                     <div class="history-item-card" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 0.75rem 1rem; transition: all 0.2s ease;">
                         <div style="flex-grow: 1; cursor: pointer; text-align: left; overflow: hidden;" onclick="loadHistoryItem('${item.id}')">
@@ -7031,6 +7091,7 @@
                                 <span style="display: flex; align-items: center; gap: 0.25rem;"><i class="bi bi-calendar-event"></i> ${item.timestamp}</span>
                                 <span style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan);">篩選：${item.filteredCount} 款</span>
                                 ${modeBadge}
+                                ${tokenBadgeHtml}
                             </div>
                             <div style="font-size: 0.88rem; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px; font-weight: 500;" title="${item.query}">
                                 ${item.query}
@@ -7092,6 +7153,7 @@
             document.getElementById('ai-prompt-input').value = item.query;
             currentReportText = item.responseText;
             currentReportQuery = item.query;
+            currentReportTokenData = item.tokenData || null;
             
             const responseBox = document.getElementById('ai-response-box');
             responseBox.style.display = 'block';
@@ -7120,14 +7182,17 @@
             
             const prevText = currentReportText;
             const prevQuery = currentReportQuery;
+            const prevToken = currentReportTokenData;
             
             currentReportText = item.responseText;
             currentReportQuery = item.query;
+            currentReportTokenData = item.tokenData || null;
             
             exportAiReport(format);
             
             currentReportText = prevText;
             currentReportQuery = prevQuery;
+            currentReportTokenData = prevToken;
         }
 
         function clearAllAiHistory() {
@@ -7137,14 +7202,104 @@
             loadHistoryList();
         }
 
+        function generateTokenAuditPanelHtml(tokenData) {
+            if (!tokenData) return '';
+            
+            const total = tokenData.totalTokens || 0;
+            const input = tokenData.promptTokens || 0;
+            const output = tokenData.completionTokens || 0;
+            
+            const system = tokenData.systemTokens || 0;
+            const rag = tokenData.ragTokens || 0;
+            const user = tokenData.userTokens || 0;
+            
+            const systemPct = input > 0 ? Math.round((system / input) * 100) : 0;
+            const ragPct = input > 0 ? Math.round((rag / input) * 100) : 0;
+            const userPct = input > 0 ? Math.round((user / input) * 100) : 0;
+            
+            const modelLabel = tokenData.model === 'ollama' 
+                ? `Ollama 本地模型 (${tokenData.modelName || 'gemma4:e2b'})` 
+                : `Gemini 雲端模型 (${tokenData.modelName || 'gemini-3.1-flash-lite'})`;
+                
+            const costHtml = tokenData.model === 'ollama'
+                ? `本機執行 (免費)`
+                : `USD $${(tokenData.costUSD || 0).toFixed(5)} | 約 <strong>NT$ ${(tokenData.costTWD || 0).toFixed(4)}</strong> (以 1:30 匯率折算)`;
+
+            return `
+                <!-- Token Audit & Cost Monitor Panel -->
+                <div class="token-audit-panel" style="background-color: #0c0f17; border: 1px solid rgba(6, 182, 212, 0.2); border-left: 4px solid var(--accent-cyan); border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;">
+                    <div style="background: rgba(6, 182, 212, 0.08); padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid rgba(6, 182, 212, 0.1);" onclick="toggleTokenAuditContent(event)">
+                        <span style="font-size: 0.82rem; color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="bi bi-cpu-fill"></i> 💻 [Token 審計與成本監控面板] — 消耗: ${total.toLocaleString()} tokens
+                        </span>
+                        <span id="token-audit-toggle-icon" style="font-size: 0.8rem; color: var(--text-secondary);"><i class="bi bi-chevron-down"></i> 點擊展開詳情</span>
+                    </div>
+                    <div id="token-audit-content" style="display: none; padding: 1rem; font-size: 0.8rem; color: #94a3b8; line-height: 1.6;">
+                        <div style="border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 0.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; color: white;">
+                            <span><strong>🤖 診斷引擎:</strong> ${modelLabel}</span>
+                        </div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <span style="color: #e2e8f0; font-weight: 600;">📥 輸入階段 (Input) — 共 ${input.toLocaleString()} tokens</span>
+                            <div style="padding-left: 1.2rem; margin-top: 0.25rem;">
+                                <div>├── ⚙️ 系統提示與角色設定: <span style="color: white; font-weight: 600;">${system.toLocaleString()}</span> tokens (${systemPct}%)</div>
+                                <div>├── 📚 知識庫方案檢索背景 (RAG): <span style="color: white; font-weight: 600;">${rag.toLocaleString()}</span> tokens (${ragPct}%)</div>
+                                <div>└── ✍️ 使用者痛點與指令: <span style="color: white; font-weight: 600;">${user.toLocaleString()}</span> tokens (${userPct}%)</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 0.5rem;">
+                            <span style="color: #e2e8f0; font-weight: 600;">📤 輸出階段 (Output)</span>
+                            <div style="padding-left: 1.2rem; margin-top: 0.25rem;">
+                                └── 🤖 模型生成的建議書內容: <span style="color: white; font-weight: 600;">${output.toLocaleString()}</span> tokens
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem; background: rgba(255,255,255,0.02); padding: 0.6rem 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04);">
+                            <div>📊 <strong>累計總量 (Total):</strong> <span style="color: var(--accent-cyan); font-weight: 600;">${total.toLocaleString()}</span> tokens</div>
+                            <div>💰 <strong>估計財務成本 (Cost):</strong> <span style="color: #a78bfa; font-weight: 600;">${costHtml}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleTokenAuditContent(event) {
+            event.stopPropagation();
+            const content = document.getElementById('token-audit-content');
+            const icon = document.getElementById('token-audit-toggle-icon');
+            if (content && icon) {
+                const isHidden = content.style.display === 'none';
+                content.style.display = isHidden ? 'block' : 'none';
+                icon.innerHTML = isHidden 
+                    ? '<i class="bi bi-chevron-up"></i> 點擊收起詳情' 
+                    : '<i class="bi bi-chevron-down"></i> 點擊展開詳情';
+            }
+        }
+
         function renderResponseWithToolbar(markdownText) {
             const responseBox = document.getElementById('ai-response-box');
             if (!responseBox) return;
             
+            let tokenBadgeHtml = "";
+            let auditPanelHtml = "";
+            
+            if (currentReportTokenData) {
+                const total = currentReportTokenData.totalTokens || 0;
+                const costText = currentReportTokenData.model === 'ollama'
+                    ? '本機免費'
+                    : `約 NT$${(currentReportTokenData.costTWD || 0).toFixed(4)}`;
+                tokenBadgeHtml = `
+                    <span style="font-size: 0.72rem; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.2); padding: 0.15rem 0.45rem; border-radius: 4px; color: var(--accent-cyan); font-family: monospace; margin-left: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        <i class="bi bi-cpu"></i> Token: ${(total/1000).toFixed(1)}k (${costText})
+                    </span>
+                `;
+                
+                auditPanelHtml = generateTokenAuditPanelHtml(currentReportTokenData);
+            }
+            
             const toolbarHtml = `
                 <div id="ai-response-toolbar" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
-                    <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
-                        <i class="bi bi-file-earmark-text"></i> 診斷分析報告
+                    <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                        <i class="bi bi-file-earmark-text"></i> 轉型診斷分析建議書
+                        ${tokenBadgeHtml}
                     </span>
                     <div style="display: flex; gap: 0.5rem;">
                         <button onclick="copyAiReport()" class="compare-bar-btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 0.35rem 0.7rem; font-size: 0.75rem; height: auto; display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer;">
@@ -7161,7 +7316,7 @@
             `;
             
             const contentHtml = parseMarkdown(markdownText);
-            responseBox.innerHTML = toolbarHtml + '<div id="ai-response-body-content">' + contentHtml + '</div>';
+            responseBox.innerHTML = toolbarHtml + auditPanelHtml + '<div id="ai-response-body-content">' + contentHtml + '</div>';
             
             // Ensure the container is shown and box is expanded
             const container = document.getElementById('ai-response-container');
@@ -7279,12 +7434,50 @@
                 mimeType = 'text/markdown;charset=utf-8;';
                 content = `# AI 數位轉型工具導入建議書\n\n`;
                 content += `> **業務痛點描述**: ${currentReportQuery}\n`;
-                content += `> **診斷日期**: ${new Date().toLocaleString('zh-TW')}\n\n`;
-                content += `---\n\n`;
+                content += `> **診斷日期**: ${new Date().toLocaleString('zh-TW')}\n`;
+                
+                if (currentReportTokenData) {
+                    const t = currentReportTokenData;
+                    const modelLabel = t.model === 'ollama' ? `Ollama (${t.modelName})` : `Gemini (${t.modelName})`;
+                    const costLabel = t.model === 'ollama' ? `本機免費` : `USD $${(t.costUSD || 0).toFixed(5)} / NT$ ${(t.costTWD || 0).toFixed(4)}`;
+                    const systemPct = t.promptTokens > 0 ? Math.round((t.systemTokens / t.promptTokens) * 100) : 0;
+                    const ragPct = t.promptTokens > 0 ? Math.round((t.ragTokens / t.promptTokens) * 100) : 0;
+                    const userPct = t.promptTokens > 0 ? Math.round((t.userTokens / t.promptTokens) * 100) : 0;
+                    
+                    content += `> **Token 審計與成本監控**:\n`;
+                    content += `> - 診斷模型: ${modelLabel}\n`;
+                    content += `> - 📥 輸入階段: 共 ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} (${systemPct}%) | RAG背景: ${t.ragTokens.toLocaleString()} (${ragPct}%) | 使用者痛點: ${t.userTokens.toLocaleString()} (${userPct}%))\n`;
+                    content += `> - 📤 輸出階段: 共 ${t.completionTokens.toLocaleString()} tokens\n`;
+                    content += `> - 📊 累計總量: 共 ${t.totalTokens.toLocaleString()} tokens\n`;
+                    content += `> - 💰 估計財務成本: ${costLabel}\n`;
+                }
+                
+                content += `\n---\n\n`;
                 content += currentReportText;
             } else if (format === 'html') {
                 filename += '.html';
                 mimeType = 'text/html;charset=utf-8;';
+                
+                let tokenAuditHtml = '';
+                if (currentReportTokenData) {
+                    const t = currentReportTokenData;
+                    const modelLabel = t.model === 'ollama' ? `Ollama (${t.modelName})` : `Gemini (${t.modelName})`;
+                    const costLabel = t.model === 'ollama' ? `<span style="color: #10b981; font-weight: 600;">本機執行 (免費)</span>` : `USD $${(t.costUSD || 0).toFixed(5)} / <span style="color: #8b5cf6; font-weight: 600;">NT$ ${(t.costTWD || 0).toFixed(4)}</span>`;
+                    const systemPct = t.promptTokens > 0 ? Math.round((t.systemTokens / t.promptTokens) * 100) : 0;
+                    const ragPct = t.promptTokens > 0 ? Math.round((t.ragTokens / t.promptTokens) * 100) : 0;
+                    const userPct = t.promptTokens > 0 ? Math.round((t.userTokens / t.promptTokens) * 100) : 0;
+                    
+                    tokenAuditHtml = `
+                    <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem; font-family: monospace; font-size: 0.88em; color: #475569; line-height: 1.6;">
+                        <strong>[Token 審計與成本監控]</strong><br>
+                        ├── 🤖 診斷模型: ${modelLabel}<br>
+                        ├── 📥 輸入階段: ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} (${systemPct}%) | 知識庫RAG: ${t.ragTokens.toLocaleString()} (${ragPct}%) | 使用者痛點: ${t.userTokens.toLocaleString()} (${userPct}%))<br>
+                        ├── 📤 輸出階段 (AI回覆): ${t.completionTokens.toLocaleString()} tokens<br>
+                        └── 📊 總計用量: <strong>${t.totalTokens.toLocaleString()}</strong> tokens | 💰 估計成本: ${costLabel}
+                    </div>
+                    `;
+                }
+                
                 content = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -7341,8 +7534,9 @@
     <div class="container">
         <h1>AI 數位轉型工具導入建議書</h1>
         <div class="meta-box">
-            <strong>業務痛點描述</strong>: ${currentReportQuery}<br>
+            <strong>業務痛點描述</strong>: ${currentReportQuery.replace(/\n/g, '<br>')}<br>
             <strong>診斷日期</strong>: ${new Date().toLocaleString('zh-TW')}
+            ${tokenAuditHtml}
         </div>
         ${parseMarkdown(currentReportText)}
     </div>
@@ -7365,8 +7559,11 @@
 
         // Ask AI Consultant - Direct Serverless Gemini API Call
         async function askAiConsultant(mode = 'recommended') {
+            const modelSelect = document.getElementById('model-select-v1');
+            const selectedModel = modelSelect ? modelSelect.value : 'gemini-3.1-flash-lite';
+
             const apiKey = localStorage.getItem('gemini_api_key');
-            if (!apiKey) {
+            if (selectedModel !== 'ollama' && !apiKey) {
                 alert("請先在左側邊欄底部的「Gemini API Key 設定」中輸入並儲存您的金鑰！");
                 return;
             }
@@ -7432,12 +7629,35 @@ ${JSON.stringify(contextTools, null, 2)}
             if (sendUnlBtn) sendUnlBtn.disabled = true;
             
             let loadingText = '';
-            if (mode === 'recommended') {
-                if (btnRecText) btnRecText.innerText = "顧問分析中...";
-                loadingText = `AI 顧問正在研讀 ${contextTools.length} 款 AI 方案規格，並為您規劃最佳轉型路徑，請稍候...`;
+            let ip = '192.168.31.202';
+            let port = '11434';
+            let model = 'gemma4:e2b';
+            let protocol = 'http://';
+
+            if (selectedModel === 'ollama') {
+                const ipInput = document.getElementById('ollama-ip-input-v1');
+                const portInput = document.getElementById('ollama-port-input-v1');
+                const modelInput = document.getElementById('ollama-model-input-v1');
+                
+                ip = ipInput ? ipInput.value.trim() : '192.168.31.202';
+                port = portInput ? portInput.value.trim() : '11434';
+                model = modelInput ? modelInput.value.trim() : 'gemma4:e2b';
+                
+                if (mode === 'recommended') {
+                    if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
+                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 為您深度精選最佳方案，請稍候...`;
+                } else {
+                    if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
+                    loadingText = `AI 助理正在藉由 Ollama 模型 (${model}) 執行您的自訂指令，請稍候...`;
+                }
             } else {
-                if (btnUnlText) btnUnlText.innerText = "執行指令中...";
-                loadingText = `AI 助理正在依據篩選出的 ${contextTools.length} 款方案執行您的自訂指令，請稍候...`;
+                if (mode === 'recommended') {
+                    if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
+                    loadingText = `AI 顧問正在從 ${contextTools.length} 款方案中，為您深度精選 1~3 款最佳方案，請稍候...`;
+                } else {
+                    if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
+                    loadingText = `AI 助理正在依據篩選出的 ${contextTools.length} 款方案執行您的自訂指令，請稍候...`;
+                }
             }
 
             const container = document.getElementById('ai-response-container');
@@ -7453,11 +7673,41 @@ ${JSON.stringify(contextTools, null, 2)}
                 </style>
             `;
 
-            // 3. Make direct HTTPS fetch call to Google Gemini
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
-            
-            try {
-                const response = await fetch(url, {
+            // Prepare Request Configuration (Gemini vs Ollama)
+            let url = '';
+            let requestOptions = {};
+
+            if (selectedModel === 'ollama') {
+                if (!ip || !port) {
+                    alert("請輸入有效的 Ollama IP 與 Port！");
+                    if (sendRecBtn) sendRecBtn.disabled = false;
+                    if (sendUnlBtn) sendUnlBtn.disabled = false;
+                    if (btnRecText) btnRecText.innerText = "推薦回答 (精選診斷)";
+                    if (btnUnlText) btnUnlText.innerText = "不設限回答 (自訂指令)";
+                    return;
+                }
+                
+                if (ip.startsWith('http://') || ip.startsWith('https://')) {
+                    protocol = '';
+                }
+                
+                const normalizedIp = ip.replace(/\/$/, '');
+                url = `${protocol}${normalizedIp}:${port}/api/generate`;
+                
+                requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        prompt: prompt,
+                        stream: false
+                    })
+                };
+            } else {
+                url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+                requestOptions = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -7469,17 +7719,104 @@ ${JSON.stringify(contextTools, null, 2)}
                             }]
                         }]
                     })
-                });
+                };
+            }
+            
+            try {
+                const response = await fetch(url, requestOptions);
 
                 if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.error?.message || "Gemini API 請求失敗");
+                    if (selectedModel === 'ollama') {
+                        throw new Error(`Ollama 伺服器傳回錯誤 (${response.status})`);
+                    } else {
+                        const errData = await response.json();
+                        throw new Error(errData.error?.message || "Gemini API 請求失敗");
+                    }
                 }
 
                 const data = await response.json();
-                const aiResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                let aiResponseText = '';
+                if (selectedModel === 'ollama') {
+                    aiResponseText = data.response;
+                } else {
+                    aiResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                }
 
                 if (aiResponseText) {
+                    // Extract token counts
+                    let promptTokens = 0;
+                    let completionTokens = 0;
+                    if (selectedModel === 'ollama') {
+                        promptTokens = data.prompt_eval_count || Math.ceil(prompt.length * 0.6);
+                        completionTokens = data.eval_count || Math.ceil(aiResponseText.length * 0.6);
+                    } else {
+                        if (data.usageMetadata) {
+                            promptTokens = data.usageMetadata.promptTokenCount || 0;
+                            completionTokens = data.usageMetadata.candidatesTokenCount || 0;
+                        } else {
+                            promptTokens = Math.ceil(prompt.length * 0.6);
+                            completionTokens = Math.ceil(aiResponseText.length * 0.6);
+                        }
+                    }
+                    const totalTokens = promptTokens + completionTokens;
+
+                    // Proportional split calculation based on character lengths
+                    const lenSystem = (mode === 'recommended') ? 
+                        (`幕僚政府 AI 補助數位轉型顧問。
+
+【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 \${contextTools.length} 款政府核定 AI 補助方案進行深度比對評估後所生成。」（請務必使用實際的數字 \${contextTools.length}，這對於讓業主知悉分析範圍是非常重要的資訊）。
+
+以下是篩選後符合業主預算與行業條件的核定 AI 補助方案清單：
+
+
+業主的實際轉型痛點描述如下：
+「」
+
+請針對業主的痛點，從上方清單中挑選最適合的 1~3 款工具方案，撰寫一份高水準的「數位轉型工具導入建議書」。
+建議書必須包含：
+1. 痛點剖析：簡述為何這些工具能解決其痛點。
+2. 工具推薦：以 Markdown 表格呈現推薦工具，包含「方案名稱」、「廠商名稱」、「價格期程」、以及「核心推薦理由」。
+3. 預期轉型效益與成效指標。
+4. 補助申請引引導：特別列出 source_url 連結方便業主跳轉申請。
+請使用繁體中文回答，語氣要專業、務實。`).length 
+                        : 
+                        (`【背景知識庫（供參考，若使用者的指令與此無關，請完全忽略）】
+目前篩選出的核定 AI 補助方案清單如下：
+
+
+【使用者自訂指令】
+請完全依據以下使用者輸入的指令、問題、語氣與格式要求進行回覆（你可以自由運用上方的背景知識庫進行回答，若指令與清單無關，則可完全忽略背景知識庫，直接回答指令內容）：
+「」`).length;
+
+                    const lenRAG = JSON.stringify(contextTools, null, 2).length;
+                    const lenUser = userQuery.length;
+                    const lenTotal = lenSystem + lenRAG + lenUser;
+
+                    const systemTokens = lenTotal > 0 ? Math.round(promptTokens * (lenSystem / lenTotal)) : 0;
+                    const ragTokens = lenTotal > 0 ? Math.round(promptTokens * (lenRAG / lenTotal)) : 0;
+                    const userTokens = Math.max(0, promptTokens - systemTokens - ragTokens);
+
+                    // Cost Calculation Engine
+                    let costUSD = 0;
+                    let costTWD = 0;
+                    if (selectedModel !== 'ollama') {
+                        costUSD = (promptTokens * 0.075 / 1000000) + (completionTokens * 0.30 / 1000000);
+                        costTWD = costUSD * 30; // NT$ 30 exchange rate
+                    }
+
+                    currentReportTokenData = {
+                        promptTokens: promptTokens,
+                        completionTokens: completionTokens,
+                        totalTokens: totalTokens,
+                        systemTokens: systemTokens,
+                        ragTokens: ragTokens,
+                        userTokens: userTokens,
+                        costUSD: costUSD,
+                        costTWD: costTWD,
+                        model: selectedModel === 'ollama' ? 'ollama' : 'gemini',
+                        modelName: selectedModel === 'ollama' ? model : selectedModel
+                    };
+
                     currentReportText = aiResponseText;
                     currentReportQuery = userQuery;
                     saveHistory(userQuery, aiResponseText, contextTools.length, mode);
@@ -7488,8 +7825,16 @@ ${JSON.stringify(contextTools, null, 2)}
                     responseBox.innerHTML = "錯誤：無法取得 AI 的回覆內容。";
                 }
             } catch (err) {
-                responseBox.innerHTML = `<div style="color: var(--accent-red); font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> 連線失敗：${err.message}</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">請確認您的 Gemini API 金鑰輸入無誤，且您的網路連線正常。</div>`;
+                if (selectedModel === 'ollama') {
+                    responseBox.innerHTML = `<div style="color: var(--accent-red); font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> 連線失敗：${err.message}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        請確認您的 Ollama 服務已啟動（位址：${protocol}${ip}:${port}），且已下載並載入 <code>${model}</code> 模型。<br>
+                        * 若為本地伺服器連線失敗，請檢查 Ollama 是否設定了環境變數 <code>OLLAMA_ORIGINS="*"</code>。
+                    </div>`;
+                } else {
+                    responseBox.innerHTML = `<div style="color: var(--accent-red); font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> 連線失敗：${err.message}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">請確認您的 Gemini API 金鑰輸入無誤，且您的網路連線正常。</div>`;
+                }
             } finally {
                 if (sendRecBtn) sendRecBtn.disabled = false;
                 if (sendUnlBtn) sendUnlBtn.disabled = false;
@@ -7734,6 +8079,32 @@ ${JSON.stringify(contextTools, null, 2)}
         filterData();
         updateHistoryCount();
         loadHistoryList();
+
+        // Model select change handling (dynamic Ollama configuration visibility)
+        const modelSelectV1 = document.getElementById('model-select-v1');
+        const ollamaRowV1 = document.getElementById('ollama-config-row-v1');
+        if (modelSelectV1 && ollamaRowV1) {
+            const syncOllamaRowV1 = () => {
+                ollamaRowV1.style.display = modelSelectV1.value === 'ollama' ? 'flex' : 'none';
+            };
+            modelSelectV1.addEventListener('change', syncOllamaRowV1);
+            syncOllamaRowV1();
+        }
+
+        // Ollama model name persistence (remember custom default model)
+        const ollamaModelInputV1 = document.getElementById('ollama-model-input-v1');
+        if (ollamaModelInputV1) {
+            const savedOllamaModel = localStorage.getItem('ollama_model');
+            if (savedOllamaModel) {
+                ollamaModelInputV1.value = savedOllamaModel;
+            }
+            ollamaModelInputV1.addEventListener('input', (e) => {
+                const val = e.target.value.trim();
+                if (val) {
+                    localStorage.setItem('ollama_model', val);
+                }
+            });
+        }
     </script>
 </body>
 </html>
