@@ -7341,8 +7341,8 @@
                 btn.className = "action-btn action-btn-secondary";
                 btn.innerHTML = `<i class="bi bi-plus-lg"></i> 對比`;
             } else {
-                if (selectedForCompare.length >= 3) {
-                    alert("一次最多只能對比 3 款 AI 方案！");
+                if (selectedForCompare.length >= 4) {
+                    alert("一次最多只能對比 4 款 AI 方案！");
                     return;
                 }
                 selectedForCompare.push(tool);
@@ -7742,16 +7742,16 @@
     <div class="container">
         <div class="header">
             <h1>台灣政府 AI 補助工具方案多維度對比報告</h1>
-            <p>匯出時間：\${new Date().toLocaleString()}</p>
+            <p>匯出時間：${new Date().toLocaleString()}</p>
         </div>
         <table>
             <thead>
                 <tr>
-                    \${tableHeaders}
+                    ${tableHeaders}
                 </tr>
             </thead>
             <tbody>
-                \${tableRows}
+                ${tableRows}
             </tbody>
         </table>
         <div class="footer">
@@ -7764,7 +7764,7 @@
 
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
             const link = document.createElement('a');
-            const filename = `AI_方案對比報告_\${new Date().toISOString().slice(0, 10)}.html`;
+            const filename = `AI_方案對比報告_${new Date().toISOString().slice(0, 10)}.html`;
             
             if (link.download !== undefined) {
                 const url = URL.createObjectURL(blob);
