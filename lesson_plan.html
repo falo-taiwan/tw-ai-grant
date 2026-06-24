@@ -626,6 +626,22 @@ print(extract_duration_months("方案期程為 12 個月"))      # 12</code></pr
                         在提供給大模型的 Prompt 中，強烈要求模型在推薦時必須附帶資料庫中的 <code>official_website</code> 或 <code>source_url</code>，這樣可以大幅增加回答的可信度，方便用戶點擊跳轉。
                     </p>
                 </div>
+
+                <!-- Sample PDF Download Card (New Addition) -->
+                <div style="margin-top: 1.5rem; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 10px; padding: 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; text-align: left;">
+                        <i class="bi bi-file-earmark-pdf-fill" style="color: #ef4444; font-size: 2rem; flex-shrink: 0;"></i>
+                        <div>
+                            <h4 style="margin: 0; color: white; font-size: 1rem; font-family: var(--font-title);">實戰範本下載：ERP 公司 AI 數位轉型工具導入建議書</h4>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4;">
+                                本 PDF 建議書是由本診斷中心 AI 顧問引擎，針對特定 ERP 公司的轉型痛點進行深度 RAG 檢索與語意重構後，所自動生成的高水準商業建議書範本，適合學員作為排版與提示詞調整的對照參考。
+                            </p>
+                        </div>
+                    </div>
+                    <a href="ERP公司AI 數位轉型工具導入建議書.pdf" download class="copy-btn" style="background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%); color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <i class="bi bi-download"></i> 下載建議書 PDF
+                    </a>
+                </div>
             </div>
         </section>
 
