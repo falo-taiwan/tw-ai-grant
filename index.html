@@ -7170,13 +7170,6 @@
             const toggleBtn = document.getElementById('ai-response-toggle-btn');
             if (toggleBtn) toggleBtn.innerHTML = '<i class="bi bi-chevron-up"></i> <span>收起建議書</span>';
             
-            // Ensure the container is shown and box is expanded
-            const container = document.getElementById('ai-response-container');
-            if (container) container.style.display = 'block';
-            responseBox.style.display = 'block';
-            const toggleBtn = document.getElementById('ai-response-toggle-btn');
-            if (toggleBtn) toggleBtn.innerHTML = '<i class="bi bi-chevron-up"></i> <span>收起建議書</span>';
-            
             if (!document.getElementById('toolbar-hover-style')) {
                 const style = document.createElement('style');
                 style.id = 'toolbar-hover-style';
