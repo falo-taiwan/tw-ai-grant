@@ -733,6 +733,24 @@ try:
 except Exception as e:
     print("地端連線失敗，請先在終端機執行 'ollama run qwen2.5'。錯誤:", e)</code></pre>
                 </div>
+
+                <div class="callout-box" style="border-left-color: var(--accent-red); margin-top: 1.5rem;">
+                    <h4><i class="bi bi-shield-slash-fill"></i> ⚠️ 瀏覽器安全性障礙：地端 CORS 與 Mixed Content 防線</h4>
+                    <p>
+                        在實作「前端網頁直接連線地端/區網 Ollama (如 <code>http://127.0.0.1:11434</code> 或 <code>http://192.168.31.202:11434</code>)」時，學生會遇到瀏覽器的安全攔截而導致 <code>Failed to fetch</code> 錯誤。主要原因與解決方案如下：
+                    </p>
+                    <ol style="margin-top: 0.5rem; margin-bottom: 0.5rem; padding-left: 1.2rem;">
+                        <li><strong>跨來源資源共用 (CORS) 限制</strong>：Ollama 預設不允許網頁跨來源連線。必須在啟動 Ollama 前，於伺服器端主機設定環境變數 <code>OLLAMA_ORIGINS="*"</code> 並重啟 Ollama，否則瀏覽器會拒絕載入回應。</li>
+                        <li><strong>混合內容阻擋 (Mixed Content Block)</strong>：如果網頁佈署在 GitHub Pages 等安全網站（網址為 <code>https://</code>），瀏覽器出於安全規定，會<b>嚴格阻擋</b>向地端或區網非安全通訊協定（<code>http://</code>）發送的任何 Fetch 請求。</li>
+                        <li><strong>繞過與連線解決策略</strong>：
+                            <ul>
+                                <li><strong>本地開啟 (最推薦)</strong>：改用 <code>file://</code> 協議雙擊開啟本地專案目錄中的 <code>index.html</code> 或 <code>v2.html</code>，此時不受混合內容限制。</li>
+                                <li><strong>啟動本地網頁伺服器</strong>：在專案目錄下執行 <code>python3 -m http.server 8000</code>，透過 <code>http://localhost:8000</code> 訪問網頁，避開瀏覽器對本地檔案的特殊權限限制。</li>
+                                <li><strong>建立安全加密隧道 (ngrok)</strong>：在 Ollama 伺服器主機執行 <code>ngrok http 11434</code>，將服務映射為隨機安全網址（如 <code>https://xxxx.ngrok-free.app</code>），複製該網址填入網頁 IP 欄位，即可在 GitHub Pages 線上版直接安全連線！</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
             </div>
         </section>
 
