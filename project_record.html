@@ -535,6 +535,39 @@
             </ul>
         </section>
 
+        <!-- 版本更新歷史 -->
+        <section class="section-card">
+            <h2><i class="bi bi-git"></i> 版本更新歷史 (Version History)</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="border-left: 3px solid var(--accent-secondary); padding-left: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong style="font-size: 1.1rem; color: white;">v2.00 當前版本 (智慧搜尋防干擾與 RAG 雙對話模式)</strong>
+                        <span style="background: rgba(6, 182, 212, 0.15); color: var(--accent-secondary); font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">2026-06-24</span>
+                    </div>
+                    <ul style="padding-left: 1.25rem; color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7;">
+                        <li><strong>防干擾智慧搜尋</strong>：重構側邊欄搜尋邏輯。當點擊任一智慧搜尋模式時，自動先清空其他過濾條件（類別、來源、適用行業，並重設價格為全部），確保搜尋不受干擾，人工仍可二次手動微調且即時呈現。</li>
+                        <li><strong>雙模式 AI 診斷</strong>：實作並排的 <code>推薦回答 (精選診斷)</code> 與 <code>不設限回答 (自訂指令)</code> 按鈕，兼顧專家顧問報告與任意對話 Token 自主控制。</li>
+                        <li><strong>動態模型選擇器</strong>：支援 <code>Gemini 3.1 Flash-Lite</code>（預設）、<code>Gemini 2.5 Flash</code>、<code>Gemini 3.1 Flash</code>、<code>Gemini 3.5 Flash</code>，動態拼裝網址，每次整理頁面重置，不寫入 localStorage。</li>
+                        <li><strong>Notion 風格 HTML 匯出</strong>：實作純淨語意 HTML 解析器 <code>parseMarkdownToCleanHtml</code> 並嵌入 Notion 輕量亮色 CSS 樣式表，解決暗色主題下匯出 HTML 文件字體隱形問題。</li>
+                        <li><strong>4 款工具橫向對比與商務亮色匯出</strong>：對比上限提升至 4，新增一鍵清空按鈕，並優化對比匯出網頁為亮色商務風格。</li>
+                    </ul>
+                </div>
+
+                <div style="border-left: 3px solid var(--text-secondary); padding-left: 1rem; opacity: 0.7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong style="font-size: 1.1rem; color: white;">v1.00 初始版本 (資料採集與智慧檢索庫)</strong>
+                        <span style="background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">2026-06-24</span>
+                    </div>
+                    <ul style="padding-left: 1.25rem; color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7;">
+                        <li>完成經濟部產業競爭力輔導團（79筆）與商業服務業數位轉型專區（145筆）資料採集，成功清洗與標準化 224 筆政府核定 AI 補助工具。</li>
+                        <li>產出 <code>unified_ai_tools_db.json</code> 與 <code>unified_ai_tools_db.csv</code>。</li>
+                        <li>開發智慧檢索與對話診斷首發版本網頁 (<code>index.html</code>)。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
         <footer>
             <p>© 2026 台灣政府 AI 補助工具庫結構化專案報告．專為 AI KM / RAG 應用優化</p>
         </footer>

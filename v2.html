@@ -1089,24 +1089,40 @@
                 </div>
 
                 <!-- Prompt Input & Send Button -->
-                <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                    <input type="text" id="ai-prompt-input" class="search-main-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1; min-width: 300px;" autocomplete="off">
-                    <button onclick="askAiConsultant()" class="search-action-btn" id="ai-send-btn">
-                        <i class="bi bi-send-fill"></i> <span id="ai-btn-text">生成轉型建議書</span>
-                    </button>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;">
+                    <input type="text" id="ai-prompt-input" class="search-main-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="width: 100%;" autocomplete="off">
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                        <button onclick="askAiConsultant('recommended')" class="search-action-btn" id="ai-send-rec-btn" style="flex: 1; min-width: 180px; background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">
+                            <i class="bi bi-patch-check-fill"></i> <span id="ai-btn-rec-text">推薦回答 (精選診斷)</span>
+                        </button>
+                        <button onclick="askAiConsultant('unlimited')" class="search-action-btn" id="ai-send-unl-btn" style="flex: 1; min-width: 180px; background: linear-gradient(135deg, var(--accent-cyan) 0%, #0891b2 100%); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3); border-color: transparent;">
+                            <i class="bi bi-chat-right-dots-fill"></i> <span id="ai-btn-unl-text">不設限回答 (自訂指令)</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- API Key & History Control Row -->
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; flex-wrap: wrap; gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 280px;">
-                        <label for="api-key-input-v2" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Gemini API Key：</label>
-                        <input type="password" id="api-key-input-v2" class="search-main-input" placeholder="請輸入您的 Gemini API 金鑰 (安全儲存於本地)..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem;" oninput="syncApiKey(this.value)">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; flex-grow: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 260px; flex-grow: 1;">
+                            <label for="api-key-input-v2" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Gemini API Key：</label>
+                            <input type="password" id="api-key-input-v2" class="search-main-input" placeholder="請輸入您的 Gemini API 金鑰 (安全儲存於本地)..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; width: 100%;" oninput="syncApiKey(this.value)">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 220px;">
+                            <label for="model-select-v2" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">AI 模型：</label>
+                            <select id="model-select-v2" class="search-main-input" style="height: 34px; font-size: 0.82rem; padding: 0 1.75rem 0 0.75rem; background-color: rgba(17, 24, 39, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white; cursor: pointer; outline: none; transition: all 0.2s; appearance: auto; flex-grow: 1;">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="gemini-3.1-flash-lite" selected>Gemini 3.1 Flash-Lite (預設)</option>
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                                <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+                            </select>
+                        </div>
                     </div>
-                    <button onclick="toggleAiHistoryPanel()" class="compare-bar-btn" id="ai-history-toggle-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; height: auto; display: flex; align-items: center; gap: 0.35rem; color: var(--text-secondary); transition: all 0.2s;">
+                    <button onclick="toggleAiHistoryPanel()" class="compare-bar-btn" id="ai-history-toggle-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; height: 34px; display: flex; align-items: center; gap: 0.35rem; color: var(--text-secondary); transition: all 0.2s; white-space: nowrap;">
                         <i class="bi bi-clock-history" style="color: var(--accent-cyan);"></i> 歷程紀錄 (<span id="ai-history-count">0</span>)
                     </button>
                 </div>
-
+                
                 <!-- AI History List Panel -->
                 <div id="ai-history-list-panel" style="display: none; background-color: rgba(5, 7, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.2rem; margin-top: 1rem; max-height: 250px; overflow-y: auto; border-left: 3px solid var(--accent-cyan);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem;">
@@ -7147,6 +7163,26 @@
         }
 
         // Trigger search by clicking sidebar buttons
+        // Clear all sidebar filters to prevent interference
+        function clearAllSidebarFilters(keepSearchText = true) {
+            // Uncheck all category filters
+            document.querySelectorAll('#category-filters input[type="checkbox"]').forEach(cb => cb.checked = false);
+            // Uncheck all source filters
+            document.querySelectorAll('#source-filters input[type="checkbox"]').forEach(cb => cb.checked = false);
+            // Uncheck all industry filters
+            document.querySelectorAll('#industry-filters input[type="checkbox"]').forEach(cb => cb.checked = false);
+            // Reset price slider to max (300000)
+            const slider = document.getElementById('price-slider');
+            if (slider) {
+                slider.value = 300000;
+                const sliderVal = document.getElementById('price-slider-val');
+                if (sliderVal) sliderVal.innerText = "全部價格";
+            }
+            if (!keepSearchText) {
+                if (sidebarSearchInput) sidebarSearchInput.value = '';
+            }
+        }
+
         function triggerSidebarSearch(mode) {
             currentSearchMode = mode;
             
@@ -7165,7 +7201,10 @@
 
             const query = sidebarSearchInput.value.trim().toLowerCase();
 
-            // Under Heuristic NLP (Mode A), programmatically adjust filters before filtering
+            // FIRST: Clear other filters to prevent interference
+            clearAllSidebarFilters(true);
+
+            // Under Heuristic NLP (Mode A), programmatically adjust filters after clearing
             if (mode === 'nlp' && query) {
                 const nlpResult = nlpParser(query);
                 
@@ -7186,7 +7225,7 @@
             // Run unified filter and update list
             filterData();
         }
-
+        
         // Sync API Key
         function syncApiKey(val) {
             safeLocalStorage.setItem('gemini_api_key', val);
@@ -7641,20 +7680,20 @@
                 { label: '官方網站', key: 'official_website', isUrl: true }
             ];
 
-            let tableHeaders = `<th style="background-color: #1e293b; color: white; border: 1px solid #334155; padding: 12px; text-align: left; font-family: sans-serif; font-weight: 600; width: 150px;">比對維度</th>`;
+            let tableHeaders = `<th style="background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; padding: 12px; text-align: left; font-family: sans-serif; font-weight: 700; width: 150px;">比對維度</th>`;
             selectedForCompare.forEach(tool => {
-                tableHeaders += `<th style="background-color: #1e293b; color: #22d3ee; border: 1px solid #334155; padding: 12px; text-align: left; font-family: sans-serif; font-weight: 600;">${tool.tool_name}</th>`;
+                tableHeaders += `<th style="background-color: #f1f5f9; color: #0891b2; border: 1px solid #cbd5e1; padding: 12px; text-align: left; font-family: sans-serif; font-weight: 700;">${tool.tool_name}</th>`;
             });
 
             let tableRows = '';
             dims.forEach(dim => {
-                tableRows += `<tr style="border-bottom: 1px solid #334155;">`;
-                tableRows += `<td style="font-weight: 600; background-color: #0f172a; color: #94a3b8; border: 1px solid #334155; padding: 12px; font-family: sans-serif; width: 150px; vertical-align: top;">${dim.label}</td>`;
+                tableRows += `<tr style="border-bottom: 1px solid #cbd5e1;">`;
+                tableRows += `<td style="font-weight: 600; background-color: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 12px; font-family: sans-serif; width: 150px; vertical-align: top;">${dim.label}</td>`;
                 
                 selectedForCompare.forEach(tool => {
                     let val = '';
                     if (dim.isUrl) {
-                        val = tool[dim.key] ? `<a href="${tool[dim.key]}" target="_blank" style="color: #38bdf8; text-decoration: none;">${tool[dim.key]}</a>` : '無';
+                        val = tool[dim.key] ? `<a href="${tool[dim.key]}" target="_blank" style="color: #2563eb; text-decoration: none;">${tool[dim.key]}</a>` : '無';
                     } else {
                         val = tool[dim.key] || '無特別標註';
                         if (tool[dim.key] && dim.suffix) {
@@ -7664,7 +7703,7 @@
                     if (typeof val === 'string') {
                         val = val.replace(/\r?\n/g, '<br>');
                     }
-                    tableRows += `<td style="color: #cbd5e1; border: 1px solid #334155; padding: 12px; font-family: sans-serif; line-height: 1.5; font-size: 14px; vertical-align: top;">${val}</td>`;
+                    tableRows += `<td style="color: #334155; border: 1px solid #cbd5e1; background-color: #ffffff; padding: 12px; font-family: sans-serif; line-height: 1.6; font-size: 14px; vertical-align: top;">${val}</td>`;
                 });
                 tableRows += `</tr>`;
             });
@@ -7677,28 +7716,34 @@
     <title>AI 方案多維度對比報告</title>
     <style>
         body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
+            background-color: #f8fafc;
+            color: #334155;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            padding: 2rem;
+            padding: 2.5rem;
             margin: 0;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            border-top: 6px solid #06b6d4;
         }
         .header {
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 2px solid #e2e8f0;
             padding-bottom: 1.5rem;
             margin-bottom: 2rem;
         }
         h1 {
-            color: white;
-            font-size: 1.85rem;
+            color: #0f172a;
+            font-size: 2rem;
             margin: 0 0 0.5rem 0;
+            font-weight: 700;
         }
         p {
-            color: #94a3b8;
+            color: #64748b;
             margin: 0;
             font-size: 0.95rem;
         }
@@ -7706,25 +7751,25 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 1.5rem;
-            background-color: #111827;
-            border: 1px solid #1e293b;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             overflow: hidden;
         }
         th, td {
             padding: 14px 16px;
-            border: 1px solid #1e293b;
+            border: 1px solid #cbd5e1;
             text-align: left;
             vertical-align: top;
         }
         th {
-            background-color: #1f2937;
-            color: #38bdf8;
-            font-weight: 600;
+            background-color: #f1f5f9;
+            color: #0891b2;
+            font-weight: 700;
         }
         td:first-child {
-            background-color: #111827;
-            color: #94a3b8;
+            background-color: #f8fafc;
+            color: #475569;
             font-weight: 600;
             width: 150px;
         }
@@ -7732,8 +7777,8 @@
             margin-top: 3rem;
             text-align: center;
             font-size: 0.8rem;
-            color: #4b5563;
-            border-top: 1px solid #1e293b;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
             padding-top: 1.5rem;
         }
     </style>
@@ -7741,8 +7786,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>台灣政府 AI 補助工具方案多維度對比報告</h1>
-            <p>匯出時間：${new Date().toLocaleString()}</p>
+            <h1>政府核定 AI 補助方案對比報告</h1>
+            <p>生成時間：${new Date().toLocaleString('zh-TW')} | 共比對 ${selectedForCompare.length} 款方案</p>
         </div>
         <table>
             <thead>
@@ -7755,7 +7800,7 @@
             </tbody>
         </table>
         <div class="footer">
-            © 2026 台灣政府 AI 補助工具智慧檢索與對話診斷系統. All rights reserved.
+            © 台灣政府 AI 補助工具智慧檢索與對話診斷系統 | 報告由系統自動生成
         </div>
     </div>
 </body>
@@ -7776,7 +7821,6 @@
                 document.body.removeChild(link);
             }
         }
-
         // Active and load history for AI Consultant
         let currentReportText = '';
         let currentReportQuery = '';
@@ -7799,7 +7843,7 @@
             }
         }
 
-        function saveHistory(query, responseText, filteredCount) {
+        function saveHistory(query, responseText, filteredCount, mode) {
             const history = getHistory();
             const now = new Date();
             const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -7809,7 +7853,8 @@
                 timestamp: timestamp,
                 query: query,
                 responseText: responseText,
-                filteredCount: filteredCount
+                filteredCount: filteredCount,
+                mode: mode || 'recommended'
             };
             
             history.unshift(newItem);
@@ -7832,12 +7877,18 @@
                 return;
             }
             
-            container.innerHTML = history.map(item => `
+            container.innerHTML = history.map(item => {
+                const modeBadge = item.mode === 'unlimited' 
+                    ? `<span style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan);">自訂指令</span>`
+                    : `<span style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: #a78bfa;">精選診斷</span>`;
+                
+                return `
                 <div class="history-item-card" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 0.75rem 1rem; transition: all 0.2s ease;">
                     <div style="flex-grow: 1; cursor: pointer; text-align: left; overflow: hidden;" onclick="loadHistoryItem('${item.id}')">
                         <div style="font-size: 0.8rem; color: var(--accent-cyan); font-weight: 500; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;">
                             <i class="bi bi-calendar-event"></i> ${item.timestamp}
-                            <span style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan);">篩選：${item.filteredCount} 款</span>
+                            ${modeBadge}
+                            <span style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--text-secondary);">背景：${item.filteredCount} 款</span>
                         </div>
                         <div style="font-size: 0.88rem; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px; font-weight: 500;" title="${item.query}">
                             ${item.query}
@@ -7855,7 +7906,8 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             
             if (!document.getElementById('history-hover-style')) {
                 const style = document.createElement('style');
@@ -8018,58 +8070,80 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.7;
+            line-height: 1.8;
             color: #334155;
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 2.5rem;
             background-color: #f8fafc;
         }
         .container {
             background: white;
-            padding: 3rem;
+            padding: 3.5rem;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
             border-top: 6px solid #8b5cf6;
         }
-        h1 { color: #1e293b; font-size: 1.8rem; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.75rem; }
-        h2 { color: #1e293b; font-size: 1.4rem; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
-        h3, h4 { color: #0f172a; font-size: 1.15rem; margin-top: 1.5rem; }
-        p { margin-bottom: 1rem; }
+        h1 { color: #0f172a; font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 700; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; }
+        h2 { color: #1e293b; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1.25rem; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+        h3 { color: #334155; font-size: 1.3rem; margin-top: 2rem; margin-bottom: 1rem; font-weight: 600; }
+        h4 { color: #475569; font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+        p { margin-bottom: 1.25rem; color: #334155; }
+        strong { color: #0f172a; font-weight: 600; }
         .meta-box {
             background-color: #f1f5f9;
-            border-left: 4px solid #64748b;
-            padding: 1rem;
-            margin-bottom: 2rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            border-left: 4px solid #8b5cf6;
+            padding: 1.25rem;
+            margin-bottom: 2.5rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1.5rem 0;
-            font-size: 0.9rem;
+            margin: 2rem 0;
+            font-size: 0.92rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
         }
         th, td {
             border: 1px solid #e2e8f0;
-            padding: 0.75rem;
+            padding: 12px 16px;
             text-align: left;
+            vertical-align: top;
         }
-        th { background-color: #f8fafc; font-weight: 600; }
-        a { color: #2563eb; text-decoration: none; }
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        td {
+            color: #334155;
+        }
+        a { color: #2563eb; text-decoration: none; font-weight: 500; }
         a:hover { text-decoration: underline; }
-        ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
-        li { margin-bottom: 0.5rem; }
+        ul, ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        li { margin-bottom: 0.5rem; color: #475569; }
+        code {
+            background-color: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #db2777;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>AI 數位轉型工具導入建議書</h1>
+        <h1>數位轉型顧問診斷與指令分析報告</h1>
         <div class="meta-box">
-            <strong>業務痛點描述</strong>: ${currentReportQuery}<br>
+            <strong>業務痛點與自訂指令</strong>: ${currentReportQuery.replace(/\n/g, '<br>')}<br>
             <strong>診斷日期</strong>: ${new Date().toLocaleString('zh-TW')}
         </div>
-        ${parseMarkdown(currentReportText)}
+        ${parseMarkdownToCleanHtml(currentReportText)}
     </div>
 </body>
 </html>`;
@@ -8088,8 +8162,73 @@
             }
         }
 
+        // Clean markdown parser for HTML file exports (Notion-style light theme friendly)
+        function parseMarkdownToCleanHtml(text) {
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+                
+            // Parse Markdown links: [text](url) -> <a href="url" target="_blank" rel="noopener noreferrer">text</a>
+            html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+            
+            // Parse raw URLs: https://... -> <a href="url" target="_blank" rel="noopener noreferrer">url</a>
+            html = html.replace(/(?<!href=")(?<!">)(https?:\/\/[^\s\)\Online\'\";,<>]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+                
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+            
+            html = html.replace(/^### (.*?)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^## (.*?)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^# (.*?)$/gm, '<h2>$1</h2>');
+            
+            html = html.replace(/^\* (.*?)$/gm, '<li>$1</li>');
+            html = html.replace(/^- (.*?)$/gm, '<li>$1</li>');
+            
+            // Markdown table parser
+            const lines = html.split('\n');
+            let inTable = false;
+            let tableHTML = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith('|') && line.endsWith('|')) {
+                    if (!inTable) {
+                        inTable = true;
+                        tableHTML = '<table>';
+                    }
+                    if (line.includes('---') || line.includes('-|-')) {
+                        continue;
+                    }
+                    const cols = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+                    const isHeader = !tableHTML.includes('</th>') && !tableHTML.includes('</td>');
+                    
+                    tableHTML += '<tr>';
+                    cols.forEach(col => {
+                        const tag = isHeader ? 'th' : 'td';
+                        tableHTML += `<${tag}>${col}</${tag}>`;
+                    });
+                    tableHTML += '</tr>';
+                    
+                    lines[i] = '';
+                } else {
+                    if (inTable) {
+                        inTable = false;
+                        tableHTML += '</table>';
+                        lines[i] = tableHTML + '\n' + lines[i];
+                    }
+                }
+            }
+            if (inTable) {
+                tableHTML += '</table>';
+                lines[lines.length - 1] += '\n' + tableHTML;
+            }
+            
+            return lines.join('\n');
+        }
+
         // Ask AI Consultant - Direct Serverless Gemini API Call (RAG based on filteredData)
-        async function askAiConsultant() {
+        async function askAiConsultant(mode = 'recommended') {
             const apiKey = safeLocalStorage.getItem('gemini_api_key');
             if (!apiKey) {
                 alert("請先在 AI 智慧轉型診斷面板底部的「Gemini API Key」輸入框中設定您的 API 金鑰！");
@@ -8098,12 +8237,14 @@
 
             const userQuery = document.getElementById('ai-prompt-input').value.trim();
             if (!userQuery) {
-                alert("請先在 AI 診斷對話框中輸入您的公司轉型痛點描述！");
+                alert("請先在 AI 診斷對話框中輸入您的轉型痛點或自訂指令！");
                 return;
             }
 
-            const sendBtn = document.getElementById('ai-send-btn');
-            const btnText = document.getElementById('ai-btn-text');
+            const sendRecBtn = document.getElementById('ai-send-rec-btn');
+            const btnRecText = document.getElementById('ai-btn-rec-text');
+            const sendUnlBtn = document.getElementById('ai-send-unl-btn');
+            const btnUnlText = document.getElementById('ai-btn-unl-text');
             const responseBox = document.getElementById('ai-response-box');
 
             // Prepare context (take all filtered tools)
@@ -8116,18 +8257,20 @@
                 source_url: t.source_url
             }));
 
-            const prompt = `
+            let prompt = '';
+            if (mode === 'recommended') {
+                prompt = `
 你是一位專業的政府 AI 補助數位轉型顧問。
 
 【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 ${contextTools.length} 款政府核定 AI 補助方案進行深度比對評估後所生成。」（請務必使用實際的數字 ${contextTools.length}，這對於讓業主知悉分析範圍是非常重要的資訊）。
 
-以下是業主篩選後符合其預算與行業條件的核定 AI 補助方案清單：
+以下是符合業主預算與行業條件的核定 AI 補助方案清單：
 ${JSON.stringify(contextTools, null, 2)}
 
 業主的實際轉型痛點描述如下：
 「${userQuery}」
 
-請針對業主的痛點，從上方篩選後的清單中挑選最適合的 1~3 款工具方案，撰寫一份高水準的「數位轉型工具導入建議書」。
+請針對業主的痛點，從上方篩選後的清單中精選最適合的 3~5 款核心工具方案（請優先挑選 3~5 款，但如果符合條件的方案特別多且合適，最多可以推薦至 10 款，請靈活配置，勿拘泥於固定數量，但應確保推薦之方案皆具備極高的針對性與實用價值），撰寫一份深度的「數位轉型工具導入建議書」。
 建議書必須包含：
 1. 痛點剖析：簡述為何這些工具能解決其痛點。
 2. 工具推薦：以 Markdown 表格呈現推薦工具，包含「方案名稱」、「廠商名稱」、「價格期程」、以及「核心推薦理由」。
@@ -8135,22 +8278,51 @@ ${JSON.stringify(contextTools, null, 2)}
 4. 補助申請引導：特別列出 source_url 連結方便業主點擊跳轉進行申請。
 請使用繁體中文回答，語氣要專業、務實。
 `;
+            } else {
+                prompt = `
+幕僚數位轉型助理。
+以下是目前業主在前端篩選出的核定 AI 補助方案清單（作為你的背景知識庫）：
+${JSON.stringify(contextTools, null, 2)}
+
+【核心任務】
+使用者（業主）對你提出了一個「自訂指令或具體問題」：
+「${userQuery}」
+
+請完全依據使用者的自訂指令或問題進行回答。你可以自由運用上方提供的方案清單作為你的知識庫，並且「完全遵循使用者所要求的格式、語氣、結構與任何限制」來回答。
+不要被傳統的「建議書」格式限制，使用者要你做什麼，你就做什麼（例如：進行特定維度比對、撰寫時程表、做數據統計、或者僅是針對特定方案進行問答，甚至是寫一首關於這些方案的詩）。
+為了確保回答結構完整且不被輸出字數限制截斷，若涉及多個方案，請以精煉的格式呈現，並保持內容「簡潔有力、直擊要害」。
+請使用繁體中文回答，語氣要專業、務實。
+`;
+            }
 
             // UI Loading State
-            sendBtn.disabled = true;
-            if (btnText) btnText.innerText = "顧問分析中...";
+            if (sendRecBtn) sendRecBtn.disabled = true;
+            if (sendUnlBtn) sendUnlBtn.disabled = true;
+            
+            let loadingText = '';
+            if (mode === 'recommended') {
+                if (btnRecText) btnRecText.innerText = "正在進行精選診斷...";
+                loadingText = `AI 顧問正在從 ${contextTools.length} 款方案中，為您深度精選 3~5 款最佳方案，請稍候...`;
+            } else {
+                if (btnUnlText) btnUnlText.innerText = "正在執行自訂指令...";
+                loadingText = `AI 助理正在依據篩選出的 ${contextTools.length} 款方案執行您的自訂指令，請稍候...`;
+            }
+
             responseBox.style.display = 'block';
             responseBox.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary);">
                     <i class="bi bi-arrow-repeat" style="font-size: 1.3rem; animation: spin 1.5s linear infinite;"></i>
-                    AI 顧問正在研讀您篩選出的 ${contextTools.length} 款 AI 方案規格，並為您規劃最佳轉型路徑，請稍候...
+                    ${loadingText}
                 </div>
                 <style>
                     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
                 </style>
             `;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
+            // Retrieve selected model from dropdown (Reset to default Lite on page load, do not store)
+            const modelSelect = document.getElementById('model-select-v2');
+            const selectedModel = modelSelect ? modelSelect.value : 'gemini-3.1-flash-lite';
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
             
             try {
                 const response = await fetch(url, {
@@ -8178,7 +8350,7 @@ ${JSON.stringify(contextTools, null, 2)}
                 if (aiResponseText) {
                     currentReportText = aiResponseText;
                     currentReportQuery = userQuery;
-                    saveHistory(userQuery, aiResponseText, contextTools.length);
+                    saveHistory(userQuery, aiResponseText, contextTools.length, mode);
                     renderResponseWithToolbar(aiResponseText);
                 } else {
                     responseBox.innerHTML = "錯誤：無法取得 AI 的回覆內容。";
@@ -8187,11 +8359,12 @@ ${JSON.stringify(contextTools, null, 2)}
                 responseBox.innerHTML = `<div style="color: var(--accent-red); font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> 連線失敗：${err.message}</div>
                 <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">請確認您的 Gemini API 金鑰輸入無誤，且您的網路連線正常。</div>`;
             } finally {
-                sendBtn.disabled = false;
-                if (btnText) btnText.innerText = "生成轉型建議書";
+                if (sendRecBtn) sendRecBtn.disabled = false;
+                if (sendUnlBtn) sendUnlBtn.disabled = false;
+                if (btnRecText) btnRecText.innerText = "推薦回答 (精選診斷)";
+                if (btnUnlText) btnUnlText.innerText = "不設限回答 (自訂指令)";
             }
         }
-
         // Custom lightweight markdown parser for formatting LLM outputs
         function parseMarkdown(text) {
             let html = text

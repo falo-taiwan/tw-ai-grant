@@ -120,3 +120,20 @@
 *   **JSON 資料庫**：`/Users/force/.gemini/antigravity/brain/20039396-f77b-4297-9410-8d56143ae67f/unified_ai_tools_db.json`
 *   **CSV 資料庫**：`/Users/force/.gemini/antigravity/brain/20039396-f77b-4297-9410-8d56143ae67f/unified_ai_tools_db.csv`
 *   **Markdown 實戰教案**：`/Users/force/.gemini/antigravity/brain/20039396-f77b-4297-9410-8d56143ae67f/ai_km_scraping_lesson_plan.md`
+
+
+---
+
+## 6. 版本更新歷史 (Version History)
+
+### v1.00 (2026-06-24)
+- 完成雙軌資料採集管線開發與執行，成功抓取並標準化 224 筆政府核定 AI 補助工具資料。
+- 產出 `unified_ai_tools_db.json` 與 `unified_ai_tools_db.csv`。
+- 完成智慧搜尋與對話診斷首發版本網頁 (`index.html`)。
+
+### v2.00 (2026-06-24) - 當前版本
+- **防干擾智慧搜尋**：重構側邊欄搜尋邏輯。當使用者點擊側邊欄的任一智慧搜尋模式（關鍵字、語意、同義詞、模糊）時，系統會自動先清空其他篩選器（類別、來源、適用行業，並重設價格為全部），以確保搜尋不受干擾。搜尋完成後，人工仍可二次勾選或調整，列表與計數即時呈現。
+- **雙模式 AI 診斷**：設計並排的 `推薦回答 (精選診斷)` 與 `不設限回答 (自訂指令)` 按鈕。推薦模式依據 RAG 模板精選 3~5 款（最多至 10 款）核心方案輸出結構化建議書；自訂指令模式不限格式，完全依據使用者自訂問題對篩選出的背景方案進行問答。
+- **動態模型選擇器**：在對話診斷區新增動態下拉選單，支援 `Gemini 3.1 Flash-Lite`（預設）、`Gemini 2.5 Flash`、`Gemini 3.1 Flash`、`Gemini 3.5 Flash`。系統直接讀取該 value 組裝 API 請求網址，且此選擇每次整理頁面皆會重置為預設，不寫入 localStorage。
+- **Notion 風格 HTML 匯出**：解決暗色主題下導出 HTML 文件導致文字看不見的問題。實作獨立的無 inline 顏色樣式解析器 `parseMarkdownToCleanHtml`，並在導出的 HTML 檔案頂部嵌入 Notion 風格亮色 CSS 樣式表。
+- **4 款工具橫向對比與商務亮色匯出**：將對比上限提升至 4，在底部對比小視窗中新增紅色的「清空對比」按鈕，並將對比結果 HTML 匯出改為極具商務質感的亮色排版。
