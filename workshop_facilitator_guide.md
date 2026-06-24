@@ -387,7 +387,7 @@ $$\text{問題 (Problem)} \rightarrow \text{流程 (Workflow)} \rightarrow \text
 
 我們提供了三套在教學與實戰中最推薦的策略：
 *   **第一，本地 file 協議開啟**：直接雙擊打開本地的 `index.html` 或 `v2.html` 檔案。此時網址是 `file://` 開頭，瀏覽器會放行混合內容限制，只要設定好 CORS 即可暢通連線。
-*   **第二，本地網頁伺服器運作**：在專案目錄下執行 `python3 -m http.server 8000`。透過本地 HTTP 協議訪問 `http://localhost:8000/v2.html`，既能測試，也能避開瀏覽器對於 `file://` 協議某些更嚴格的本地檔案沙盒限制。
+*   **第二，本地網頁伺服器運作**：在專案目錄下執行 `python3 -m http.server 7777`。透過本地 HTTP 協議訪問 `http://localhost:7777/v2.html`，既能測試，也能避開瀏覽器對於 `file://` 協議某些更嚴格的本地檔案沙盒限制。
 *   **第三，建立安全加密隧道 (ngrok)**：在 Ollama 主機執行 `ngrok http 11434`。這會產生一個臨時的 `https://xxxx.ngrok-free.app` 加密網址。因為是 `https`，它就能與 GitHub Pages 線上版完美融合，繞過混合內容阻擋，實現真正的線上版直連地端！
 
 這就是資安工程與架構設計的魅力。當我們遇到 `Failed to fetch` 時，不要只覺得是壞掉了，它其實是瀏覽器在用最嚴密的方式保護我們的隱私，而理解這兩道牆，就是大家成為高階系統架構師的第一步！」

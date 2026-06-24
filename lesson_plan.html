@@ -761,7 +761,7 @@ except Exception as e:
                         <li><strong>繞過與連線解決策略</strong>：
                             <ul>
                                 <li><strong>本地開啟 (最推薦)</strong>：改用 <code>file://</code> 協議雙擊開啟本地專案目錄中的 <code>index.html</code> 或 <code>v2.html</code>，此時不受混合內容限制。</li>
-                                <li><strong>啟動本地網頁伺服器</strong>：在專案目錄下執行 <code>python3 -m http.server 8000</code>，透過 <code>http://localhost:8000</code> 訪問網頁，避開瀏覽器對本地檔案的特殊權限限制。</li>
+                                <li><strong>啟動本地網頁伺服器</strong>：在專案目錄下執行 <code>python3 -m http.server 7777</code>，透過 <code>http://localhost:7777</code> 訪問網頁，避開瀏覽器對本地檔案的特殊權限限制。</li>
                                 <li><strong>建立安全加密隧道 (ngrok)</strong>：在 Ollama 伺服器主機執行 <code>ngrok http 11434</code>，將服務映射為隨機安全網址（如 <code>https://xxxx.ngrok-free.app</code>），複製該網址填入網頁 IP 欄位，即可在 GitHub Pages 線上版直接安全連線！</li>
                             </ul>
                         </li>
