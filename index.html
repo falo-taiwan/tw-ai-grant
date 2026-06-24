@@ -713,7 +713,7 @@
                 <div class="filter-label"><i class="bi bi-search"></i> 關鍵字檢索</div>
                 <div class="search-wrapper">
                     <i class="bi bi-search"></i>
-                    <input type="text" id="search-input" class="search-input" placeholder="查詢名稱、廠商或簡介...">
+                    <input type="text" id="search-input" class="search-input" placeholder="查詢名稱、廠商或簡介..." autocomplete="off">
                 </div>
             </div>
 
@@ -807,7 +807,7 @@
                         AI 顧問將讀取您當前篩選出的 <span id="ai-filtered-count" style="color: var(--accent-cyan); font-weight: 600;">0</span> 款 AI 方案作為知識庫背景，為您撰寫客製化導入建議書。
                     </p>
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <input type="text" id="ai-prompt-input" class="search-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1;">
+                        <input type="text" id="ai-prompt-input" class="search-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1;" autocomplete="off">
                         <button onclick="askAiConsultant()" class="compare-bar-btn" id="ai-send-btn" style="border-radius: 12px; padding: 0 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; height: 46px;">
                             <span id="ai-btn-text">生成報告</span> <i class="bi bi-send-fill"></i>
                         </button>
@@ -7521,6 +7521,11 @@ ${JSON.stringify(contextTools, null, 2)}
             sortData();
             renderCards();
         });
+
+        // 強制清空關鍵字檢索與 AI 對話輸入框，防範瀏覽器自動填入與快取干擾
+        if (searchInput) searchInput.value = '';
+        const aiPromptInput = document.getElementById('ai-prompt-input');
+        if (aiPromptInput) aiPromptInput.value = '';
 
         initFilters();
         filterData();
