@@ -711,6 +711,20 @@ print(response.text)</code></pre>
                     </p>
                 </div>
 
+                <div class="callout-box" style="border-left-color: var(--accent-cyan); margin-top: 1.5rem;">
+                    <h4><i class="bi bi-cpu-fill"></i> 💎 進階架構：前端 RAG 降噪引擎與 4,096 Token 物理超載防禦</h4>
+                    <p>
+                        在 V2.00 儀表面板中，我們實作了一套業界級的<b>「RAG 降噪與超載防禦工程沙盒」</b>，引導學生在瀏覽器端直觀調優 RAG 性能與成本：
+                    </p>
+                    <ul style="margin-top: 0.5rem; margin-bottom: 0.5rem; padding-left: 1.2rem; line-height: 1.6;">
+                        <li><strong>4,096 Tokens 物理壁壘</strong>：本地 SLM (如 Gemma 2) 的默認 Context Window 為 4K。若直接發送全量資料（237筆，共 20K+ tokens），會觸發大模型自動截斷，導致輸入佔滿 4,095 tokens，使 AI 僅剩 1 token 可用於輸出而卡死。</li>
+                        <li><strong>5 大前端 RAG 降噪引擎</strong>：提供「無過濾」、「欄位投影與精簡（Token 壓縮）」、「TF-IDF 相關性排序」、「語意特徵與同義詞擴展」、「UI 條件聯動過濾」等技術。</li>
+                        <li><strong>純 JS 字元級 TF-IDF 排序與語意同義詞擴展</strong>：針對中文採用 Unigram（單字）與 Bigram（雙字）的 N-gram 切分法計算字頻與 IDF 得分，配合行業同義詞自動擴充（如將 POS 與結帳、收銀關聯），在前端極速（&lt;5ms）完成粗篩，將 Token 壓縮至 ~800 tokens，性能提升數十倍。</li>
+                        <li><strong>發送前預檢與攔截 (Pre-flight Safeguard)</strong>：發送前以 <code>字元數 * 0.45</code> 高精度估算 Token 數，若超載則強力攔截並探出「超載預警對話框」，提供套用 TF-IDF 自動優化、堅持發送全文（作為超載崩潰對照組）與取消等 HCI 互動方案。</li>
+                        <li><strong>中繼數據足跡 (Metadata Footprint)</strong>：為保證報告的可重複性與商業審計，將該次應用的 RAG 引擎名稱寫入本地歷史資料庫，並同步寫入導出的 Markdown 與 Notion 風格 HTML 文件中。</li>
+                    </ul>
+                </div>
+
                 <div class="code-container">
                     <div class="code-header">
                         <div class="code-lang"><i class="bi bi-filetype-py"></i> local_ollama.py</div>
