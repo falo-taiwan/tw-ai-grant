@@ -7996,7 +7996,10 @@
                     const costText = item.tokenData.model === 'ollama' 
                         ? 'Ollama免費' 
                         : `NT$${(item.tokenData.costTWD || 0).toFixed(4)}`;
-                    tokenBadgeHtml = `<span style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan);">Token: ${(totalTokens/1000).toFixed(1)}k (${costText})</span>`;
+                    const timeText = item.tokenData.generationTime 
+                        ? ` | ${item.tokenData.generationTime.toFixed(1)}s` 
+                        : '';
+                    tokenBadgeHtml = `<span style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.7rem; color: var(--accent-cyan);">Token: ${(totalTokens/1000).toFixed(1)}k (${costText}${timeText})</span>`;
                 }
                 
                 return `
@@ -8170,6 +8173,7 @@
                         <div style="display: flex; flex-direction: column; gap: 0.25rem; background: rgba(255,255,255,0.02); padding: 0.6rem 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04);">
                             <div>📊 <strong>累計總量 (Total):</strong> <span style="color: var(--accent-cyan); font-weight: 600;">${total.toLocaleString()}</span> tokens</div>
                             <div>💰 <strong>估計財務成本 (Cost):</strong> <span style="color: #a78bfa; font-weight: 600;">${costHtml}</span></div>
+                            ${tokenData.generationTime ? `<div>⚡ <strong>執行耗時 (Latency):</strong> <span style="color: #22d3ee; font-weight: 600;">${tokenData.generationTime.toFixed(2)}</span> 秒</div>` : ''}
                         </div>
                     </div>
                 </div>
@@ -8201,9 +8205,12 @@
                 const costText = currentReportTokenData.model === 'ollama'
                     ? '本機免費'
                     : `約 NT$${(currentReportTokenData.costTWD || 0).toFixed(4)}`;
+                const timeText = currentReportTokenData.generationTime 
+                    ? ` | ${currentReportTokenData.generationTime.toFixed(2)}秒` 
+                    : '';
                 tokenBadgeHtml = `
                     <span style="font-size: 0.72rem; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.2); padding: 0.15rem 0.45rem; border-radius: 4px; color: var(--accent-cyan); font-family: monospace; margin-left: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
-                        <i class="bi bi-cpu"></i> Token: ${(total/1000).toFixed(1)}k (${costText})
+                        <i class="bi bi-cpu"></i> Token: ${(total/1000).toFixed(1)}k (${costText}${timeText})
                     </span>
                 `;
                 
@@ -8328,6 +8335,9 @@
                     content += `> - 📤 輸出階段: 共 ${t.completionTokens.toLocaleString()} tokens\n`;
                     content += `> - 📊 累計總量: 共 ${t.totalTokens.toLocaleString()} tokens\n`;
                     content += `> - 💰 估計財務成本: ${costLabel}\n`;
+                    if (t.generationTime) {
+                        content += `> - ⚡ 執行耗時: ${t.generationTime.toFixed(2)} 秒\n`;
+                    }
                 }
                 
                 content += `\n---\n\n`;
@@ -8344,6 +8354,7 @@
                     const systemPct = t.promptTokens > 0 ? Math.round((t.systemTokens / t.promptTokens) * 100) : 0;
                     const ragPct = t.promptTokens > 0 ? Math.round((t.ragTokens / t.promptTokens) * 100) : 0;
                     const userPct = t.promptTokens > 0 ? Math.round((t.userTokens / t.promptTokens) * 100) : 0;
+                    const timeLabel = t.generationTime ? ` | ⚡ 執行耗時: <strong>${t.generationTime.toFixed(2)}</strong> 秒` : '';
                     
                     tokenAuditHtml = `
                     <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem; font-family: monospace; font-size: 0.88em; color: #475569; line-height: 1.6;">
@@ -8351,7 +8362,7 @@
                         ├── 🤖 診斷模型: ${modelLabel}<br>
                         ├── 📥 輸入階段: ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} (${systemPct}%) | 知識庫RAG: ${t.ragTokens.toLocaleString()} (${ragPct}%) | 使用者痛點: ${t.userTokens.toLocaleString()} (${userPct}%))<br>
                         ├── 📤 輸出階段 (AI回覆): ${t.completionTokens.toLocaleString()} tokens<br>
-                        └── 📊 總計用量: <strong>${t.totalTokens.toLocaleString()}</strong> tokens | 💰 估計成本: ${costLabel}
+                        └── 📊 總計用量: <strong>${t.totalTokens.toLocaleString()}</strong> tokens | 💰 估計成本: ${costLabel}${timeLabel}
                     </div>
                     `;
                 }
