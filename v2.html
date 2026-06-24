@@ -8318,9 +8318,13 @@
                     const t = currentReportTokenData;
                     const modelLabel = t.model === 'ollama' ? `Ollama (${t.modelName})` : `Gemini (${t.modelName})`;
                     const costLabel = t.model === 'ollama' ? `本機免費` : `USD $${(t.costUSD || 0).toFixed(5)} / NT$ ${(t.costTWD || 0).toFixed(4)}`;
+                    const systemPct = t.promptTokens > 0 ? Math.round((t.systemTokens / t.promptTokens) * 100) : 0;
+                    const ragPct = t.promptTokens > 0 ? Math.round((t.ragTokens / t.promptTokens) * 100) : 0;
+                    const userPct = t.promptTokens > 0 ? Math.round((t.userTokens / t.promptTokens) * 100) : 0;
+                    
                     content += `> **Token 審計與成本監控**:\n`;
                     content += `> - 診斷模型: ${modelLabel}\n`;
-                    content += `> - 📥 輸入階段: 共 ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} | RAG背景: ${t.ragTokens.toLocaleString()} | 使用者痛點: ${t.userTokens.toLocaleString()})\n`;
+                    content += `> - 📥 輸入階段: 共 ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} (${systemPct}%) | RAG背景: ${t.ragTokens.toLocaleString()} (${ragPct}%) | 使用者痛點: ${t.userTokens.toLocaleString()} (${userPct}%))\n`;
                     content += `> - 📤 輸出階段: 共 ${t.completionTokens.toLocaleString()} tokens\n`;
                     content += `> - 📊 累計總量: 共 ${t.totalTokens.toLocaleString()} tokens\n`;
                     content += `> - 💰 估計財務成本: ${costLabel}\n`;
@@ -8337,11 +8341,15 @@
                     const t = currentReportTokenData;
                     const modelLabel = t.model === 'ollama' ? `Ollama (${t.modelName})` : `Gemini (${t.modelName})`;
                     const costLabel = t.model === 'ollama' ? `<span style="color: #10b981; font-weight: 600;">本機執行 (免費)</span>` : `USD $${(t.costUSD || 0).toFixed(5)} / <span style="color: #8b5cf6; font-weight: 600;">NT$ ${(t.costTWD || 0).toFixed(4)}</span>`;
+                    const systemPct = t.promptTokens > 0 ? Math.round((t.systemTokens / t.promptTokens) * 100) : 0;
+                    const ragPct = t.promptTokens > 0 ? Math.round((t.ragTokens / t.promptTokens) * 100) : 0;
+                    const userPct = t.promptTokens > 0 ? Math.round((t.userTokens / t.promptTokens) * 100) : 0;
+                    
                     tokenAuditHtml = `
                     <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem; font-family: monospace; font-size: 0.88em; color: #475569; line-height: 1.6;">
                         <strong>[Token 審計與成本監控]</strong><br>
                         ├── 🤖 診斷模型: ${modelLabel}<br>
-                        ├── 📥 輸入階段: ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} | 知識庫RAG: ${t.ragTokens.toLocaleString()} | 使用者痛點: ${t.userTokens.toLocaleString()})<br>
+                        ├── 📥 輸入階段: ${t.promptTokens.toLocaleString()} tokens (系統提示: ${t.systemTokens.toLocaleString()} (${systemPct}%) | 知識庫RAG: ${t.ragTokens.toLocaleString()} (${ragPct}%) | 使用者痛點: ${t.userTokens.toLocaleString()} (${userPct}%))<br>
                         ├── 📤 輸出階段 (AI回覆): ${t.completionTokens.toLocaleString()} tokens<br>
                         └── 📊 總計用量: <strong>${t.totalTokens.toLocaleString()}</strong> tokens | 💰 估計成本: ${costLabel}
                     </div>
