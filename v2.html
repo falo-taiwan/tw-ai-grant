@@ -26,32 +26,150 @@
     <!-- 引入本地端全文檢索庫 MiniSearch -->
     <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"></script>
     <style>
-        /* v2.00 Sidebar Search Buttons Style */
+        /* v2.00 Sidebar Search Buttons Base Style */
         .sidebar-search-btn {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-secondary);
-            border-radius: 8px;
-            padding: 0.55rem 0.75rem;
-            font-size: 0.82rem;
+            border-radius: 10px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.45rem;
-            transition: all 0.2s ease;
+            gap: 0.5rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: left;
             width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
         }
-        .sidebar-search-btn:hover {
-            background: rgba(6, 182, 212, 0.05);
-            color: var(--accent-cyan);
-            border-color: rgba(6, 182, 212, 0.3);
+        .sidebar-search-btn:active {
+            transform: scale(0.97);
         }
-        .sidebar-search-btn.active {
-            background: rgba(6, 182, 212, 0.15);
+        
+        /* Help Modal Tabs */
+        .help-tab-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 0.5rem 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .help-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        .help-tab-btn.active-traditional {
+            background: rgba(6, 182, 212, 0.12);
+            border-color: var(--accent-cyan);
+            color: #22d3ee;
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
+        }
+        .help-tab-btn.active-nlp {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: #10b981;
+            color: #34d399;
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+        .help-tab-btn.active-synonyms {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: #f59e0b;
+            color: #fbbf24;
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+        }
+        .help-tab-btn.active-fuzzy {
+            background: rgba(168, 85, 247, 0.12);
+            border-color: #a855f7;
+            color: #c084fc;
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+        }
+        
+        /* 1. 傳統關鍵字檢索 (Cyan) */
+        #btn-search-traditional {
+            background: rgba(6, 182, 212, 0.04);
+            border: 1px solid rgba(6, 182, 212, 0.18);
+            color: rgba(34, 211, 238, 0.85);
+        }
+        #btn-search-traditional:hover {
+            background: rgba(6, 182, 212, 0.08);
+            color: #22d3ee;
+            border-color: rgba(6, 182, 212, 0.45);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+        #btn-search-traditional.active {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.3) 0%, rgba(8, 145, 178, 0.35) 100%);
             color: white;
             border-color: var(--accent-cyan);
-            box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+            box-shadow: 0 0 16px rgba(6, 182, 212, 0.45);
+            font-weight: 600;
+        }
+
+        /* 2. 語意條件解析 (Emerald Green) */
+        #btn-search-nlp {
+            background: rgba(16, 185, 129, 0.04);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+            color: rgba(52, 211, 153, 0.85);
+        }
+        #btn-search-nlp:hover {
+            background: rgba(16, 185, 129, 0.08);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.45);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+        #btn-search-nlp.active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.35) 100%);
+            color: white;
+            border-color: #10b981;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
+            font-weight: 600;
+        }
+
+        /* 3. 同義詞關聯 (Amber Orange) */
+        #btn-search-synonyms {
+            background: rgba(245, 158, 11, 0.04);
+            border: 1px solid rgba(245, 158, 11, 0.18);
+            color: rgba(251, 191, 36, 0.85);
+        }
+        #btn-search-synonyms:hover {
+            background: rgba(245, 158, 11, 0.08);
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.45);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+        }
+        #btn-search-synonyms.active {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.35) 100%);
+            color: white;
+            border-color: #f59e0b;
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
+            font-weight: 600;
+        }
+
+        /* 4. 模糊相關度排序 (Purple) */
+        #btn-search-fuzzy {
+            background: rgba(168, 85, 247, 0.04);
+            border: 1px solid rgba(168, 85, 247, 0.18);
+            color: rgba(192, 132, 252, 0.85);
+        }
+        #btn-search-fuzzy:hover {
+            background: rgba(168, 85, 247, 0.08);
+            color: #c084fc;
+            border-color: rgba(168, 85, 247, 0.45);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+        #btn-search-fuzzy.active {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(124, 58, 237, 0.35) 100%);
+            color: white;
+            border-color: #a855f7;
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.45);
             font-weight: 600;
         }
 
@@ -682,8 +800,71 @@
             gap: 0.5rem;
         }
 
-        .modal-block-title i {
+        /* Card Action Buttons */
+        .action-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            transition: all 0.2s ease;
+            height: 36px;
+        }
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+        
+        /* 詳情按鈕 (Primary - Cyan) */
+        .action-btn-primary {
+            background: rgba(6, 182, 212, 0.08);
+            border-color: rgba(6, 182, 212, 0.25);
             color: var(--accent-cyan);
+            font-weight: 600;
+        }
+        .action-btn-primary:hover {
+            background: rgba(6, 182, 212, 0.16);
+            border-color: var(--accent-cyan);
+            color: white;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+        
+        /* 未選取對比按鈕 (Secondary) */
+        .action-btn-secondary {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+        }
+        .action-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+        
+        /* 已選取對比按鈕 (Success - Emerald Green / Glowing) */
+        .action-btn-success {
+            background: rgba(16, 185, 129, 0.15) !important;
+            border-color: #10b981 !important;
+            color: #34d399 !important;
+            font-weight: 600 !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3) !important;
+        }
+        .action-btn-success:hover {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: #34d399 !important;
+            color: white !important;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.45) !important;
         }
 
         /* Comparison Modal */
@@ -805,10 +986,26 @@
                     <input type="text" id="sidebar-search-input" class="search-input" placeholder="輸入關鍵字或痛點描述..." autocomplete="off">
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                    <button onclick="triggerSidebarSearch('traditional')" class="sidebar-search-btn active" id="btn-search-traditional"><i class="bi bi-search"></i> 關鍵字檢索</button>
-                    <button onclick="triggerSidebarSearch('nlp')" class="sidebar-search-btn" id="btn-search-nlp"><i class="bi bi-magic"></i> 語意條件解析</button>
-                    <button onclick="triggerSidebarSearch('synonyms')" class="sidebar-search-btn" id="btn-search-synonyms"><i class="bi bi-shuffle"></i> 同義詞關聯</button>
-                    <button onclick="triggerSidebarSearch('fuzzy')" class="sidebar-search-btn" id="btn-search-fuzzy"><i class="bi bi-sort-down"></i> 模糊相關度排序</button>
+                    <button onclick="triggerSidebarSearch('traditional')" class="sidebar-search-btn active" id="btn-search-traditional">
+                        <i class="bi bi-search"></i>
+                        <span style="flex-grow: 1;">關鍵字檢索</span>
+                        <i class="bi bi-question-circle" onclick="showSearchHelp(event, 'traditional')" style="font-size: 0.95rem; opacity: 0.6; padding: 0.2rem; margin-right: -0.2rem; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.15)';" onmouseout="this.style.opacity='0.6'; this.style.transform='none';"></i>
+                    </button>
+                    <button onclick="triggerSidebarSearch('nlp')" class="sidebar-search-btn" id="btn-search-nlp">
+                        <i class="bi bi-magic"></i>
+                        <span style="flex-grow: 1;">語意條件解析</span>
+                        <i class="bi bi-question-circle" onclick="showSearchHelp(event, 'nlp')" style="font-size: 0.95rem; opacity: 0.6; padding: 0.2rem; margin-right: -0.2rem; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.15)';" onmouseout="this.style.opacity='0.6'; this.style.transform='none';"></i>
+                    </button>
+                    <button onclick="triggerSidebarSearch('synonyms')" class="sidebar-search-btn" id="btn-search-synonyms">
+                        <i class="bi bi-shuffle"></i>
+                        <span style="flex-grow: 1;">同義詞關聯</span>
+                        <i class="bi bi-question-circle" onclick="showSearchHelp(event, 'synonyms')" style="font-size: 0.95rem; opacity: 0.6; padding: 0.2rem; margin-right: -0.2rem; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.15)';" onmouseout="this.style.opacity='0.6'; this.style.transform='none';"></i>
+                    </button>
+                    <button onclick="triggerSidebarSearch('fuzzy')" class="sidebar-search-btn" id="btn-search-fuzzy">
+                        <i class="bi bi-sort-down"></i>
+                        <span style="flex-grow: 1;">模糊相關度排序</span>
+                        <i class="bi bi-question-circle" onclick="showSearchHelp(event, 'fuzzy')" style="font-size: 0.95rem; opacity: 0.6; padding: 0.2rem; margin-right: -0.2rem; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.15)';" onmouseout="this.style.opacity='0.6'; this.style.transform='none';"></i>
+                    </button>
                 </div>
             </div>
 
@@ -876,49 +1073,57 @@
                 </div>
             </header>
 
-            <!-- AI Dialog Panel -->
-            <div class="section-card" style="padding: 1.5rem; margin-bottom: 2.5rem; border: 1px solid rgba(139, 92, 246, 0.25); background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(6, 182, 212, 0.02) 100%);">
-                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAiPanel()">
-                    <h3 style="font-family: var(--font-title); font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: white; border: none; padding: 0;">
-                        <i class="bi bi-robot" style="color: var(--accent-purple); font-size: 1.4rem;"></i> AI 智慧轉型診斷顧問助理
-                    </h3>
-                    <span id="ai-panel-toggle-icon" style="color: var(--text-secondary);"><i class="bi bi-chevron-down"></i></span>
-                </div>
-                <div id="ai-panel-content" style="margin-top: 1.25rem; display: none;">
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                        AI 顧問將讀取您當前篩選出的 <span id="ai-filtered-count" style="color: var(--accent-cyan); font-weight: 600;">0</span> 款 AI 方案作為知識庫背景，為您撰寫客製化導入建議書。
-                    </p>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <input type="text" id="ai-prompt-input" class="search-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1;" autocomplete="off">
-                        <button onclick="askAiConsultant()" class="compare-bar-btn" id="ai-send-btn" style="border-radius: 12px; padding: 0 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; height: 46px;">
-                            <span id="ai-btn-text">生成報告</span> <i class="bi bi-send-fill"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- History Toggle and Counter -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <button onclick="toggleAiHistoryPanel()" class="compare-bar-btn" id="ai-history-toggle-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; height: auto; display: flex; align-items: center; gap: 0.35rem; color: var(--text-secondary); transition: all 0.2s;">
-                            <i class="bi bi-clock-history" style="color: var(--accent-cyan);"></i> 歷程紀錄 (<span id="ai-history-count">0</span>)
-                        </button>
-                    </div>
-
-                    <!-- AI History List Panel -->
-                    <div id="ai-history-list-panel" style="display: none; background-color: rgba(5, 7, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; max-height: 250px; overflow-y: auto; border-left: 3px solid var(--accent-cyan);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem;">
-                            <span style="font-size: 0.85rem; color: white; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> 歷史診斷紀錄</span>
-                            <button onclick="clearAllAiHistory()" class="compare-bar-btn" style="background: transparent; border: none; color: var(--accent-red); padding: 0; font-size: 0.75rem; height: auto; display: flex; align-items: center; gap: 0.25rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-                                <i class="bi bi-trash3-fill"></i> 清空全部
-                            </button>
-                        </div>
-                        <div id="ai-history-items-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <!-- History items will be rendered here -->
-                        </div>
-                    </div>
-
-                    <div id="ai-response-box" style="background-color: #05070c; border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 1.5rem; min-height: 80px; max-height: 500px; overflow-y: auto; display: none; font-size: 0.95rem; line-height: 1.7; color: #e2e8f0; border-left: 3px solid var(--accent-purple); position: relative;">
-                        <!-- AI Response content rendered here -->
+<!-- AI Interactive Diagnosis Panel (Hero Element) -->
+            <div class="smart-search-container">
+                <h3 style="font-family: var(--font-title); font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem; color: white; margin-bottom: 0.75rem;">
+                    <i class="bi bi-robot" style="color: var(--accent-purple); font-size: 1.5rem;"></i> AI 智慧轉型診斷顧問助理
+                </h3>
+                
+                <!-- AI RAG Background Info & Guide -->
+                <div style="background: rgba(0, 0, 0, 0.2); border-left: 3px solid var(--accent-purple); padding: 0.85rem 1.2rem; border-radius: 8px; font-size: 0.88rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                    <i class="bi bi-info-circle-fill" style="color: var(--accent-purple);"></i> <strong>AI 診斷指引：</strong>
+                    AI 轉型顧問是針對您<strong>目前在左側篩選後的方案結果</strong>進行對話與診斷分析。<strong>為能更精準、更有效益地找到適合您公司的解決方案</strong>，建議您在點擊生成報告前，先利用左側邊欄進行過濾。
+                    <div style="margin-top: 0.35rem; color: rgba(255,255,255,0.45);">
+                        當前已載入作為 AI 背景知識的方案數量：<span id="ai-filtered-count" style="color: var(--accent-cyan); font-weight: 700; font-size: 1rem;">0</span> 款
                     </div>
                 </div>
+
+                <!-- Prompt Input & Send Button -->
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                    <input type="text" id="ai-prompt-input" class="search-main-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex-grow: 1; min-width: 300px;" autocomplete="off">
+                    <button onclick="askAiConsultant()" class="search-action-btn" id="ai-send-btn">
+                        <i class="bi bi-send-fill"></i> <span id="ai-btn-text">生成轉型建議書</span>
+                    </button>
+                </div>
+
+                <!-- API Key & History Control Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; flex-wrap: wrap; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 280px;">
+                        <label for="api-key-input-v2" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Gemini API Key：</label>
+                        <input type="password" id="api-key-input-v2" class="search-main-input" placeholder="請輸入您的 Gemini API 金鑰 (安全儲存於本地)..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem;" oninput="syncApiKey(this.value)">
+                    </div>
+                    <button onclick="toggleAiHistoryPanel()" class="compare-bar-btn" id="ai-history-toggle-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; height: auto; display: flex; align-items: center; gap: 0.35rem; color: var(--text-secondary); transition: all 0.2s;">
+                        <i class="bi bi-clock-history" style="color: var(--accent-cyan);"></i> 歷程紀錄 (<span id="ai-history-count">0</span>)
+                    </button>
+                </div>
+
+                <!-- AI History List Panel -->
+                <div id="ai-history-list-panel" style="display: none; background-color: rgba(5, 7, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.2rem; margin-top: 1rem; max-height: 250px; overflow-y: auto; border-left: 3px solid var(--accent-cyan);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem;">
+                        <span style="font-size: 0.85rem; color: white; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> 歷史對話與診斷紀錄</span>
+                        <button onclick="clearAllAiHistory()" class="compare-bar-btn" style="background: transparent; border: none; color: var(--accent-red); padding: 0; font-size: 0.75rem; height: auto; display: flex; align-items: center; gap: 0.25rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                            <i class="bi bi-trash3-fill"></i> 清空全部
+                        </button>
+                    </div>
+                    <div id="ai-history-items-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <!-- History items will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Diagnosis Response Box -->
+            <div id="ai-response-box" style="background-color: #05070c; border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 1.5rem; min-height: 80px; max-height: 500px; overflow-y: auto; display: none; font-size: 0.95rem; line-height: 1.7; color: #e2e8f0; border-left: 3px solid var(--accent-purple); position: relative; margin-bottom: 2.5rem;">
+                <!-- AI Response content rendered here -->
             </div>
 
             <!-- Cards Grid -->
@@ -931,7 +1136,38 @@
     <!-- Floating Compare Bar -->
     <div class="compare-bar" id="compare-bar">
         <div class="compare-bar-text"><span id="compare-count" style="color: var(--accent-cyan); font-weight: 700;">0</span> 款方案已選取</div>
-        <button class="compare-bar-btn" id="compare-btn">進行對比</button>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="compare-bar-btn" onclick="clearAllCompareItems()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; font-size: 0.85rem; font-weight: 600;" onmouseover="this.style.background='rgba(239, 68, 68, 0.25)'; this.style.color='white';" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'; this.style.color='#f87171';">
+                <i class="bi bi-trash3-fill"></i> 清除
+            </button>
+            <button class="compare-bar-btn" id="compare-btn">進行對比</button>
+        </div>
+    </div>
+
+    <!-- Search Help Modal -->
+    <div class="modal-overlay" id="search-help-modal">
+        <div class="modal-content" style="max-width: 600px; padding: 2rem; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);">
+            <button class="close-modal-btn" onclick="closeSearchHelpModal()"><i class="bi bi-x-lg"></i></button>
+            <div class="modal-header" style="margin-bottom: 1.5rem;">
+                <h2 style="font-family: var(--font-title); font-size: 1.5rem; color: white; display: flex; align-items: center; gap: 0.5rem; border: none; padding: 0; margin: 0;">
+                    <i class="bi bi-question-circle" style="color: var(--accent-cyan);"></i> 智慧檢索模式說明
+                </h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">了解四種搜尋模式的運作原理與最佳使用情境</p>
+            </div>
+            
+            <!-- Modal Tabs -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem; flex-wrap: wrap;">
+                <button onclick="switchHelpTab('traditional')" class="help-tab-btn" id="tab-help-traditional">關鍵字檢索</button>
+                <button onclick="switchHelpTab('nlp')" class="help-tab-btn" id="tab-help-nlp">語意條件解析</button>
+                <button onclick="switchHelpTab('synonyms')" class="help-tab-btn" id="tab-help-synonyms">同義詞關聯</button>
+                <button onclick="switchHelpTab('fuzzy')" class="help-tab-btn" id="tab-help-fuzzy">模糊相關度排序</button>
+            </div>
+            
+            <!-- Tab Contents -->
+            <div id="help-content-area">
+                <!-- Dynamic Content Rendered Here -->
+            </div>
+        </div>
     </div>
 
     <!-- Details Modal -->
@@ -1005,9 +1241,14 @@
     <div class="modal-overlay" id="compare-modal">
         <div class="modal-content compare-modal-content">
             <button class="close-modal-btn" onclick="closeCompareModal()"><i class="bi bi-x-lg"></i></button>
-            <div class="modal-header">
-                <h2><i class="bi bi-columns-gap"></i> AI 工具方案多維度對比</h2>
-                <p style="color: var(--text-secondary);">橫向對比您所選取的 AI 工具細節屬性</p>
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="border: none; padding: 0; margin: 0;"><i class="bi bi-columns-gap"></i> AI 工具方案多維度對比</h2>
+                    <p style="color: var(--text-secondary); margin-top: 0.25rem;">橫向對比您所選取的 AI 工具細節屬性</p>
+                </div>
+                <button onclick="exportComparisonHtml()" class="action-btn action-btn-primary" style="margin-right: 2.5rem; height: 36px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <i class="bi bi-file-earmark-arrow-down-fill"></i> 匯出比對結果 (HTML)
+                </button>
             </div>
             <div class="compare-table-wrapper">
                 <table class="compare-table" id="compare-table">
@@ -6755,6 +6996,35 @@
   }
 ];
 
+        // Safe LocalStorage Helper to prevent crashes in strict browser environments (e.g., Safari file:// protocol)
+        const safeLocalStorage = {
+            _storage: {},
+            getItem: function(key) {
+                try {
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    console.warn("localStorage.getItem failed, using in-memory fallback:", e);
+                    return this._storage[key] || null;
+                }
+            },
+            setItem: function(key, value) {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    console.warn("localStorage.setItem failed, using in-memory fallback:", e);
+                    this._storage[key] = String(value);
+                }
+            },
+            removeItem: function(key) {
+                try {
+                    localStorage.removeItem(key);
+                } catch (e) {
+                    console.warn("localStorage.removeItem failed, using in-memory fallback:", e);
+                    delete this._storage[key];
+                }
+            }
+        };
+
         // Active State
         let filteredData = [...TOOLS_DATA];
         let selectedForCompare = [];
@@ -6764,13 +7034,14 @@
         // Dom Elements Cache
         const sidebarSearchInput = document.getElementById('sidebar-search-input');
         const priceSlider = document.getElementById('price-slider');
-        const sortSelect = document.getElementById('sort-select');
+        const priceSliderVal = document.getElementById('price-slider-val');
         const cardsGrid = document.getElementById('cards-grid');
         const toolsCount = document.getElementById('tools-count');
         const aiFilteredCount = document.getElementById('ai-filtered-count');
         const compareBar = document.getElementById('compare-bar');
         const compareCount = document.getElementById('compare-count');
         const compareBtn = document.getElementById('compare-btn');
+        const sortSelect = document.getElementById('sort-select');
 
         // AI Pain Point & Synonym Dictionary (Mode B)
         const SYNO_MAP = {
@@ -6786,16 +7057,24 @@
 
         // Initialize MiniSearch and index database on page load (Mode C)
         function initMiniSearch() {
-            miniSearch = new MiniSearch({
-                fields: ['tool_name', 'provider_name', 'tool_description', 'success_cases'],
-                storeFields: ['id'],
-                searchOptions: {
-                    boost: { tool_name: 3, provider_name: 2, tool_description: 1 },
-                    fuzzy: 0.2
-                }
-            });
-            miniSearch.addAll(TOOLS_DATA);
-            console.log("MiniSearch local index initialized successfully!");
+            if (typeof MiniSearch === 'undefined') {
+                console.warn("MiniSearch is not loaded! Fuzzy search mode C will not be available.");
+                return;
+            }
+            try {
+                miniSearch = new MiniSearch({
+                    fields: ['tool_name', 'provider_name', 'tool_description', 'success_cases'],
+                    storeFields: ['id'],
+                    searchOptions: {
+                        boost: { tool_name: 3, provider_name: 2, tool_description: 1 },
+                        fuzzy: 0.2
+                    }
+                });
+                miniSearch.addAll(TOOLS_DATA);
+                console.log("MiniSearch local index initialized successfully!");
+            } catch (e) {
+                console.error("Error initializing MiniSearch:", e);
+            }
         }
 
         // Heuristic NLP Parser (Mode A)
@@ -6891,8 +7170,8 @@
                 const nlpResult = nlpParser(query);
                 
                 if (nlpResult.industry) {
-                    // Check only matching industry and uncheck others
-                    const checkElements = document.querySelectorAll('input[type="checkbox"][value^="G"], input[type="checkbox"][value^="I"], input[type="checkbox"][value^="H"], input[type="checkbox"][value^="J"], input[type="checkbox"][value^="M"], input[type="checkbox"][value^="S"]');
+                    // Check only matching industry and uncheck others in the sidebar checkboxes
+                    const checkElements = document.querySelectorAll('#industry-filters input[type="checkbox"]');
                     checkElements.forEach(cb => {
                         cb.checked = (cb.value === nlpResult.industry);
                     });
@@ -6900,7 +7179,7 @@
                 
                 if (nlpResult.budget) {
                     priceSlider.value = nlpResult.budget;
-                    document.getElementById('price-val').innerText = nlpResult.budget >= 300000 ? "全部價格" : `$${nlpResult.budget.toLocaleString()}`;
+                    priceSliderVal.innerText = nlpResult.budget >= 300000 ? "全部價格" : `$${nlpResult.budget.toLocaleString()}`;
                 }
             }
 
@@ -6910,7 +7189,7 @@
 
         // Sync API Key
         function syncApiKey(val) {
-            localStorage.setItem('gemini_api_key', val);
+            safeLocalStorage.setItem('gemini_api_key', val);
             const drawerKey = document.getElementById('api-key-input-v2');
             if (drawerKey) drawerKey.value = val;
         }
@@ -6920,16 +7199,13 @@
             const query = sidebarSearchInput.value.trim().toLowerCase();
             const maxPrice = parseInt(priceSlider.value);
             
-            const selectedCats = Array.from(document.querySelectorAll('input[type="checkbox"][value]:checked'))
-                .filter(cb => !cb.value.startsWith("工業館") && !cb.value.startsWith("Tcloud") && !cb.value.startsWith("共契") && !cb.value.includes("G批發") && !cb.value.includes("I住宿") && !cb.value.includes("H運輸") && !cb.value.includes("J出版") && !cb.value.includes("M專業") && !cb.value.includes("S其他"))
+            const selectedCats = Array.from(document.querySelectorAll('#category-filters input[type="checkbox"]:checked'))
                 .map(cb => cb.value);
                 
-            const selectedSources = Array.from(document.querySelectorAll('input[type="checkbox"][value]:checked'))
-                .filter(cb => cb.value.startsWith("工業館") || cb.value.startsWith("Tcloud") || cb.value.startsWith("共契"))
+            const selectedSources = Array.from(document.querySelectorAll('#source-filters input[type="checkbox"]:checked'))
                 .map(cb => cb.value);
 
-            const selectedInds = Array.from(document.querySelectorAll('input[type="checkbox"][value]:checked'))
-                .filter(cb => cb.value.includes("G批發") || cb.value.includes("I住宿") || cb.value.includes("H運輸") || cb.value.includes("J出版") || cb.value.includes("M專業") || cb.value.includes("S其他"))
+            const selectedInds = Array.from(document.querySelectorAll('#industry-filters input[type="checkbox"]:checked'))
                 .map(cb => cb.value);
 
             filteredData = TOOLS_DATA.filter(item => {
@@ -6952,7 +7228,7 @@
                         // Let MiniSearch handle it downstream
                         matchesQuery = true;
                     } else {
-                        // 'traditional' and 'nlp' (which falls back to standard keyword for matching if checkboxes are set)
+                        // 'traditional' and 'nlp' (which falls back to standard keyword for matching)
                         matchesQuery = 
                             item.tool_name.toLowerCase().includes(query) || 
                             item.provider_name.toLowerCase().includes(query) || 
@@ -6980,7 +7256,7 @@
             });
 
             // Parse local scoring indexing for fuzzy mode
-            if (currentSearchMode === 'fuzzy' && query) {
+            if (currentSearchMode === 'fuzzy' && query && typeof miniSearch !== 'undefined') {
                 const searchResults = miniSearch.search(query);
                 const scoreMap = new Map(searchResults.map(r => [r.id, r.score]));
                 
@@ -7044,7 +7320,7 @@
                         </div>
                         
                         <div class="card-actions" style="margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 1rem; display: flex; gap: 0.5rem;">
-                            <button class="action-btn action-btn-primary" onclick="showDetailModal('${item.id}')" style="flex: 1;"><i class="bi bi-eye"></i> 詳情</button>
+                            <button class="action-btn action-btn-primary" onclick="openDetailModal('${item.id}')" style="flex: 1;"><i class="bi bi-eye"></i> 詳情</button>
                             <button class="action-btn ${isSelected ? 'action-btn-success' : 'action-btn-secondary'}" onclick="toggleCompare(this, '${item.id}')" style="width: auto; padding: 0 0.75rem;">
                                 <i class="bi ${isSelected ? 'bi-check-lg' : 'bi-plus-lg'}"></i> 對比
                             </button>
@@ -7086,47 +7362,65 @@
             }
         }
 
-        // Details Modal
-        function showDetailModal(id) {
-            const tool = TOOLS_DATA.find(x => x.id === id);
-            if (!tool) return;
+        // Details Modal - Populates exact HTML elements by original IDs
+        function openDetailModal(id) {
+            const item = TOOLS_DATA.find(t => t.id === id);
+            if (!item) return;
+
+            document.getElementById('modal-source-badge').innerText = item.data_source;
+            document.getElementById('modal-source-badge').className = `source-badge ${item.data_source.includes("商業服務業") ? 'smebiz' : 'moeai'}`;
+            document.getElementById('modal-tool-title').innerText = item.tool_name;
+            document.getElementById('modal-provider-name').innerHTML = `<i class="bi bi-building"></i> ${item.provider_name}`;
+            document.getElementById('modal-tool-desc').innerText = item.tool_description || '暫無方案介紹。';
             
-            document.getElementById('modal-source-badge').innerText = tool.data_source;
-            document.getElementById('modal-source-badge').className = `source-badge ${tool.data_source.includes("工業館") ? "source-gyg" : tool.data_source.includes("Tcloud") ? "source-tcloud" : "source-gq"}`;
-            document.getElementById('modal-tool-title').innerText = tool.tool_name;
-            document.getElementById('modal-provider-name').innerHTML = `<i class="bi bi-building"></i> ${tool.provider_name} (統編: ${tool.provider_tax_id || '無標註'})`;
-            
-            document.getElementById('modal-price-raw').innerText = tool.price_raw || "價格視規格另議";
-            document.getElementById('modal-price-amount').innerText = tool.price_amount ? `$${tool.price_amount.toLocaleString()} TWD` : "視規格另議";
-            document.getElementById('modal-duration').innerText = tool.duration_months ? `${tool.duration_months} 個月` : "依官方宣告";
-            document.getElementById('modal-category').innerText = tool.category_standardized;
-            
-            document.getElementById('modal-desc').innerText = tool.tool_description || "暫無詳細簡介。";
-            document.getElementById('modal-specs').innerText = tool.specifications || "依標準規格發布。";
-            document.getElementById('modal-cases').innerText = tool.success_cases || "暫無成功案例資訊。";
-            
-            document.getElementById('modal-industries').innerText = tool.target_industries ? tool.target_industries.join(', ') : "不限行業別";
-            document.getElementById('modal-contact').innerText = `${tool.contact_person || '專案聯絡窗口'} / ${tool.contact_email || '無信箱'} / ${tool.contact_phone || '無電話'}`;
-            
-            const websiteLink = document.getElementById('modal-website');
-            if (tool.official_website && tool.official_website !== "http://") {
-                websiteLink.href = tool.official_website;
-                websiteLink.innerText = tool.official_website;
-                websiteLink.style.display = "inline";
+            const specCont = document.getElementById('modal-specifications-container');
+            if (item.specifications) {
+                specCont.style.display = 'block';
+                document.getElementById('modal-specifications').innerText = item.specifications;
             } else {
-                websiteLink.style.display = "none";
-                websiteLink.previousSibling.textContent = "無官方網站資料";
+                specCont.style.display = 'none';
             }
-            
-            const sourceLink = document.getElementById('modal-source-url');
-            if (tool.source_url) {
-                sourceLink.href = tool.source_url;
-                sourceLink.innerText = "查看政府補助頁面原始連結";
-                sourceLink.style.display = "inline-block";
+
+            const succCont = document.getElementById('modal-success-cases-container');
+            if (item.success_cases) {
+                succCont.style.display = 'block';
+                document.getElementById('modal-success-cases').innerText = item.success_cases;
             } else {
-                sourceLink.style.display = "none";
+                succCont.style.display = 'none';
             }
-            
+
+            document.getElementById('modal-price-raw').innerText = item.price_raw || '洽詢廠商 (專案報價)';
+
+            const taxCont = document.getElementById('modal-tax-id-container');
+            if (item.provider_tax_id) {
+                taxCont.style.display = 'flex';
+                document.getElementById('modal-tax-id').innerText = item.provider_tax_id;
+            } else {
+                taxCont.style.display = 'none';
+            }
+
+            document.getElementById('modal-category-std').innerText = item.category_standardized || '綜合類別';
+
+            const indCont = document.getElementById('modal-industries-container');
+            if (item.target_industries && item.target_industries.length > 0) {
+                indCont.style.display = 'flex';
+                document.getElementById('modal-industries').innerText = item.target_industries.join(', ');
+            } else {
+                indCont.style.display = 'none';
+            }
+
+            document.getElementById('modal-contact-person').innerText = item.contact_person || '政府專案窗口';
+            document.getElementById('modal-contact-email').innerText = item.contact_email || '請由補助官網洽詢';
+
+            const webCont = document.getElementById('modal-website-container');
+            if (item.official_website) {
+                webCont.style.display = 'flex';
+                document.getElementById('modal-website-link').href = item.official_website;
+            } else {
+                webCont.style.display = 'none';
+            }
+
+            document.getElementById('modal-source-url').href = item.source_url || '#';
             document.getElementById('detail-modal').classList.add('show');
         }
 
@@ -7134,8 +7428,128 @@
             document.getElementById('detail-modal').classList.remove('show');
         }
 
+        // Search Help Modal Logic & Detailed Explanations
+        const helpData = {
+            traditional: {
+                title: "關鍵字檢索",
+                icon: "bi-search",
+                color: "var(--accent-cyan)",
+                bgColor: "rgba(6, 182, 212, 0.03)",
+                borderColor: "rgba(6, 182, 212, 0.25)",
+                desc: "最基礎的精確匹配檢索。系統會將您輸入的字詞與方案名稱、廠商名稱及方案簡介進行字面比對，只有精確包含該字詞的方案才會被篩選出來。",
+                scenarios: [
+                    "當您明確知道某個工具的名稱（例如：指引、POS、CRM）時。",
+                    "當您想搜尋特定的服務廠商（例如：百加、肚肚、財報雲）時。"
+                ],
+                tips: "此模式速度最快、結果最精確，但無法處理錯別字、同義字或語意相近的描述（例如搜尋「點餐」將找不到僅寫有「POS」的方案）。"
+            },
+            nlp: {
+                title: "語意條件解析 (Heuristic NLP Parser)",
+                icon: "bi-magic",
+                color: "#10b981",
+                bgColor: "rgba(16, 185, 129, 0.03)",
+                borderColor: "rgba(16, 185, 129, 0.25)",
+                desc: "智慧分析您輸入的自然語言句子，自動從中識別您的「行業別」與「預算金額」，並**自動勾選左側的篩選條件、調整價格拉桿**進行參數連動！",
+                scenarios: [
+                    "當您懶得手動點選左側一堆篩選器時。",
+                    "想用直覺的一句話快速設定條件，例如輸入：「我是**餐飲業**，想要 **15 萬**以內的方案」並點擊此模式。"
+                ],
+                tips: "解析完成後，您會看到左側的「適用行業別」自動被勾選，「價格預算上限」拉桿也自動調整到對應的金額，是實現篩選器智慧連動的強大功能！"
+            },
+            synonyms: {
+                title: "同義詞關聯",
+                icon: "bi-shuffle",
+                color: "#f59e0b",
+                bgColor: "rgba(245, 158, 11, 0.03)",
+                borderColor: "rgba(245, 158, 11, 0.25)",
+                desc: "內建常見商業痛點與行業同義詞關聯字典。當您輸入特定痛點字詞時，系統會自動擴展檢索範圍，聯想並包含相關的技術與工具字詞進行搜尋。",
+                scenarios: [
+                    "當您只知道目前遇到的問題，不知道該用什麼工具名稱時。",
+                    "例如輸入「**漏單**」，系統會自動同時搜尋「點餐、訂單、POS、餐飲、結帳」等所有相關方案。"
+                ],
+                tips: "目前字典已支援「漏單、排隊、沒人接電話、記帳、庫存、廣告、零售、外送」等八大核心痛點的同義詞智慧聯想擴展檢索。"
+            },
+            fuzzy: {
+                title: "模糊相關度排序",
+                icon: "bi-sort-down",
+                color: "#a855f7",
+                bgColor: "rgba(168, 85, 247, 0.03)",
+                borderColor: "rgba(168, 85, 247, 0.25)",
+                desc: "啟用瀏覽器本地端的高效全文檢索庫 `MiniSearch`，對所有方案進行權重計算與模糊比對，並依據與搜尋詞的相關度分數（Relevance Score）由高到低進行精確排序。",
+                scenarios: [
+                    "當您不確定字詞的精確寫法（容許輕微錯字或拼音偏差）時。",
+                    "當您輸入較長的痛點描述，希望系統將「最貼近、最符合」的方案排在最前面時。"
+                ],
+                tips: "此模式會對「方案名稱」給予最高權重，其次為「廠商名稱」與「簡介」，能提供比傳統包含搜尋更具智慧的相關性排序結果。"
+            }
+        };
+
+        let currentHelpTab = 'traditional';
+
+        function showSearchHelp(event, mode) {
+            // Stop propagation to prevent triggering the search button click!
+            if (event) event.stopPropagation();
+            
+            currentHelpTab = mode;
+            const modal = document.getElementById('search-help-modal');
+            if (modal) {
+                modal.classList.add('show');
+                switchHelpTab(mode);
+            }
+        }
+
+        function closeSearchHelpModal() {
+            const modal = document.getElementById('search-help-modal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function switchHelpTab(mode) {
+            currentHelpTab = mode;
+            
+            // Update Tab active classes
+            const modes = ['traditional', 'nlp', 'synonyms', 'fuzzy'];
+            modes.forEach(m => {
+                const btn = document.getElementById(`tab-help-${m}`);
+                if (btn) {
+                    // Remove all possible active classes
+                    btn.classList.remove('active-traditional', 'active-nlp', 'active-synonyms', 'active-fuzzy');
+                    if (m === mode) {
+                        btn.classList.add(`active-${mode}`);
+                    }
+                }
+            });
+            
+            // Render Content
+            const data = helpData[mode];
+            const contentArea = document.getElementById('help-content-area');
+            if (contentArea && data) {
+                contentArea.innerHTML = `
+                    <div style="background: ${data.bgColor}; border: 1px solid ${data.borderColor}; border-radius: 12px; padding: 1.5rem; text-align: left; transition: all 0.3s ease;">
+                        <h3 style="color: ${data.color}; font-family: var(--font-title); font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; border: none; padding: 0;">
+                            <i class="bi ${data.icon}"></i> ${data.title}
+                        </h3>
+                        <p style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.25rem;">
+                            ${data.desc}
+                        </p>
+                        
+                        <h4 style="color: white; font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
+                            <i class="bi bi-lightbulb-fill" style="color: #fbbf24;"></i> 推薦使用情境
+                        </h4>
+                        <ul style="margin-left: 1.25rem; margin-bottom: 1.25rem; color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5;">
+                            ${data.scenarios.map(s => `<li style="list-style-type: disc; margin-bottom: 0.35rem;">${s}</li>`).join('')}
+                        </ul>
+                        
+                        <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 0.75rem 1rem; border-left: 3px solid ${data.color}; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">
+                            <strong style="color: white; display: block; margin-bottom: 0.25rem;"><i class="bi bi-info-circle"></i> 運作小提示</strong>
+                            ${data.tips}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         // Compare Modal
-        document.getElementById('compare-btn').addEventListener('click', () => {
+        compareBtn.addEventListener('click', () => {
             if (selectedForCompare.length < 2) {
                 alert("請至少選擇 2 款方案進行對比！");
                 return;
@@ -7191,12 +7605,184 @@
             document.getElementById('compare-modal').classList.remove('show');
         }
 
+        function clearAllCompareItems() {
+            if (selectedForCompare.length === 0) return;
+            if (!confirm("確定要清除所有已選取的對比項目嗎？")) return;
+            
+            selectedForCompare = [];
+            
+            // Re-render the cards to reset their button styles back to unselected state
+            renderCards();
+            
+            // Close the comparison modal since there is nothing left to compare!
+            closeCompareModal();
+            
+            // Hide/update the comparison bar at the bottom of the screen
+            updateCompareBar();
+        }
+
+        // Export the comparison matrix to a gorgeous standalone HTML file
+        function exportComparisonHtml() {
+            if (selectedForCompare.length === 0) return;
+            
+            const dims = [
+                { label: '方案名稱', key: 'tool_name' },
+                { label: '服務廠商', key: 'provider_name' },
+                { label: '計畫來源', key: 'data_source' },
+                { label: '標準化類別', key: 'category_standardized' },
+                { label: '價格規格', key: 'price_raw' },
+                { label: '方案期程', key: 'duration_months', suffix: ' 個月' },
+                { label: '廠商統編', key: 'provider_tax_id' },
+                { label: '方案簡介', key: 'tool_description' },
+                { label: '方案規格', key: 'specifications' },
+                { label: '成功案例', key: 'success_cases' },
+                { label: '聯絡人', key: 'contact_person' },
+                { label: '聯絡信箱', key: 'contact_email' },
+                { label: '官方網站', key: 'official_website', isUrl: true }
+            ];
+
+            let tableHeaders = `<th style="background-color: #1e293b; color: white; border: 1px solid #334155; padding: 12px; text-align: left; font-family: sans-serif; font-weight: 600; width: 150px;">比對維度</th>`;
+            selectedForCompare.forEach(tool => {
+                tableHeaders += `<th style="background-color: #1e293b; color: #22d3ee; border: 1px solid #334155; padding: 12px; text-align: left; font-family: sans-serif; font-weight: 600;">${tool.tool_name}</th>`;
+            });
+
+            let tableRows = '';
+            dims.forEach(dim => {
+                tableRows += `<tr style="border-bottom: 1px solid #334155;">`;
+                tableRows += `<td style="font-weight: 600; background-color: #0f172a; color: #94a3b8; border: 1px solid #334155; padding: 12px; font-family: sans-serif; width: 150px; vertical-align: top;">${dim.label}</td>`;
+                
+                selectedForCompare.forEach(tool => {
+                    let val = '';
+                    if (dim.isUrl) {
+                        val = tool[dim.key] ? `<a href="${tool[dim.key]}" target="_blank" style="color: #38bdf8; text-decoration: none;">${tool[dim.key]}</a>` : '無';
+                    } else {
+                        val = tool[dim.key] || '無特別標註';
+                        if (tool[dim.key] && dim.suffix) {
+                            val += dim.suffix;
+                        }
+                    }
+                    if (typeof val === 'string') {
+                        val = val.replace(/\r?\n/g, '<br>');
+                    }
+                    tableRows += `<td style="color: #cbd5e1; border: 1px solid #334155; padding: 12px; font-family: sans-serif; line-height: 1.5; font-size: 14px; vertical-align: top;">${val}</td>`;
+                });
+                tableRows += `</tr>`;
+            });
+
+            const htmlContent = `
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 方案多維度對比報告</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 2rem;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            color: white;
+            font-size: 1.85rem;
+            margin: 0 0 0.5rem 0;
+        }
+        p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background-color: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 14px 16px;
+            border: 1px solid #1e293b;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #1f2937;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        td:first-child {
+            background-color: #111827;
+            color: #94a3b8;
+            font-weight: 600;
+            width: 150px;
+        }
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #4b5563;
+            border-top: 1px solid #1e293b;
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>台灣政府 AI 補助工具方案多維度對比報告</h1>
+            <p>匯出時間：\${new Date().toLocaleString()}</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    \${tableHeaders}
+                </tr>
+            </thead>
+            <tbody>
+                \${tableRows}
+            </tbody>
+        </table>
+        <div class="footer">
+            © 2026 台灣政府 AI 補助工具智慧檢索與對話診斷系統. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
+            `.trim();
+
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+            const link = document.createElement('a');
+            const filename = `AI_方案對比報告_\${new Date().toISOString().slice(0, 10)}.html`;
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
         // Active and load history for AI Consultant
         let currentReportText = '';
         let currentReportQuery = '';
 
         function getHistory() {
-            const histStr = localStorage.getItem('gemini_consultation_history');
+            const histStr = safeLocalStorage.getItem('gemini_consultation_history');
             if (!histStr) return [];
             try {
                 return JSON.parse(histStr);
@@ -7231,7 +7817,7 @@
                 history.pop();
             }
             
-            localStorage.setItem('gemini_consultation_history', JSON.stringify(history));
+            safeLocalStorage.setItem('gemini_consultation_history', JSON.stringify(history));
             updateHistoryCount();
             loadHistoryList();
         }
@@ -7306,7 +7892,7 @@
             
             let history = getHistory();
             history = history.filter(x => x.id !== id);
-            localStorage.setItem('gemini_consultation_history', JSON.stringify(history));
+            safeLocalStorage.setItem('gemini_consultation_history', JSON.stringify(history));
             
             updateHistoryCount();
             loadHistoryList();
@@ -7332,7 +7918,7 @@
 
         function clearAllAiHistory() {
             if (!confirm("確定要清空所有歷史診斷紀錄嗎？此操作無法復原。")) return;
-            localStorage.removeItem('gemini_consultation_history');
+            safeLocalStorage.removeItem('gemini_consultation_history');
             updateHistoryCount();
             loadHistoryList();
         }
@@ -7504,7 +8090,7 @@
 
         // Ask AI Consultant - Direct Serverless Gemini API Call (RAG based on filteredData)
         async function askAiConsultant() {
-            const apiKey = localStorage.getItem('gemini_api_key');
+            const apiKey = safeLocalStorage.getItem('gemini_api_key');
             if (!apiKey) {
                 alert("請先在 AI 智慧轉型診斷面板底部的「Gemini API Key」輸入框中設定您的 API 金鑰！");
                 return;
@@ -7520,8 +8106,8 @@
             const btnText = document.getElementById('ai-btn-text');
             const responseBox = document.getElementById('ai-response-box');
 
-            // Prepare context (take top 15 filtered tools max to stay efficient)
-            const contextTools = filteredData.slice(0, 15).map(t => ({
+            // Prepare context (take all filtered tools)
+            const contextTools = filteredData.map(t => ({
                 tool_name: t.tool_name,
                 provider_name: t.provider_name,
                 category: t.category_standardized,
@@ -7532,6 +8118,9 @@
 
             const prompt = `
 你是一位專業的政府 AI 補助數位轉型顧問。
+
+【重要規範】在建議書的開頭，請務必先以顯著醒目的格式（例如前言或粗體標示）明確告知業主：「本次轉型建議書是針對您在前端篩選出的 ${contextTools.length} 款政府核定 AI 補助方案進行深度比對評估後所生成。」（請務必使用實際的數字 ${contextTools.length}，這對於讓業主知悉分析範圍是非常重要的資訊）。
+
 以下是業主篩選後符合其預算與行業條件的核定 AI 補助方案清單：
 ${JSON.stringify(contextTools, null, 2)}
 
@@ -7549,7 +8138,7 @@ ${JSON.stringify(contextTools, null, 2)}
 
             // UI Loading State
             sendBtn.disabled = true;
-            btnText.innerText = "顧問分析中...";
+            if (btnText) btnText.innerText = "顧問分析中...";
             responseBox.style.display = 'block';
             responseBox.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary);">
@@ -7599,7 +8188,7 @@ ${JSON.stringify(contextTools, null, 2)}
                 <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">請確認您的 Gemini API 金鑰輸入無誤，且您的網路連線正常。</div>`;
             } finally {
                 sendBtn.disabled = false;
-                btnText.innerText = "生成轉型建議書";
+                if (btnText) btnText.innerText = "生成轉型建議書";
             }
         }
 
@@ -7674,31 +8263,76 @@ ${JSON.stringify(contextTools, null, 2)}
             return lines.join('\n');
         }
 
-        // Initialize checkbox facet handlers
+        // Initialize checkbox facet handlers by dynamically query and populating the correct DOM IDs
         function initFilters() {
-            const categories = Array.from(new Set(TOOLS_DATA.map(item => item.category_standardized)));
-            const catContainer = document.getElementById('categories-container');
-            if (catContainer) {
-                catContainer.innerHTML = categories.map(cat => `
-                    <label class="filter-checkbox-label">
-                        <input type="checkbox" value="${cat}">
-                        <span>${cat}</span>
-                    </label>
-                `).join('');
-            }
-            
-            // Add listeners to checkboxes in categories, industries and sources to filter on change
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener('change', filterData);
+            const categories = new Set();
+            const sources = new Set();
+            const industries = new Set();
+
+            TOOLS_DATA.forEach(item => {
+                if (item.category_standardized) categories.add(item.category_standardized);
+                if (item.data_source) {
+                    if (item.data_source.includes("工業館")) sources.add("經濟部輔導團 - 工業館");
+                    else if (item.data_source.includes("Tcloud")) sources.add("經濟部輔導團 - Tcloud");
+                    else if (item.data_source.includes("共契")) sources.add("經濟部輔導團 - 共契");
+                    else sources.add(item.data_source);
+                }
+                if (item.target_industries) {
+                    item.target_industries.forEach(ind => industries.add(ind));
+                }
             });
+
+            // Render Standard Categories into category-filters
+            const catContainer = document.getElementById('category-filters');
+            if (catContainer) {
+                catContainer.innerHTML = "";
+                Array.from(categories).sort().forEach(cat => {
+                    catContainer.innerHTML += `
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="category-checkbox" value="${cat}" onchange="filterData()">
+                            ${cat}
+                        </label>
+                    `;
+                });
+            }
+
+            // Render Sources into source-filters
+            const sourceContainer = document.getElementById('source-filters');
+            if (sourceContainer) {
+                sourceContainer.innerHTML = "";
+                Array.from(sources).sort().forEach(src => {
+                    sourceContainer.innerHTML += `
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="source-checkbox" value="${src}" onchange="filterData()">
+                            ${src}
+                        </label>
+                    `;
+                });
+            }
+
+            // Render Industries into industry-filters
+            const indContainer = document.getElementById('industry-filters');
+            if (indContainer) {
+                indContainer.innerHTML = "";
+                Array.from(industries).sort().forEach(ind => {
+                    indContainer.innerHTML += `
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="industry-checkbox" value="${ind}" onchange="filterData()">
+                            ${ind}
+                        </label>
+                    `;
+                });
+            }
         }
 
         // DOM Click events
         window.addEventListener('click', (e) => {
             const detailModal = document.getElementById('detail-modal');
             const compareModal = document.getElementById('compare-modal');
+            const helpModal = document.getElementById('search-help-modal');
             if (e.target === detailModal) closeDetailModal();
             if (e.target === compareModal) closeCompareModal();
+            if (e.target === helpModal) closeSearchHelpModal();
         });
         
         // Let Enter trigger search in sidebar input
@@ -7710,7 +8344,7 @@ ${JSON.stringify(contextTools, null, 2)}
 
         priceSlider.addEventListener('input', () => {
             const val = parseInt(priceSlider.value);
-            document.getElementById('price-val').innerText = val >= 300000 ? "全部價格" : `$${val.toLocaleString()}`;
+            priceSliderVal.innerText = val >= 300000 ? "全部價格" : `$${val.toLocaleString()}`;
             filterData();
         });
         
@@ -7727,11 +8361,13 @@ ${JSON.stringify(contextTools, null, 2)}
         loadHistoryList();
 
         // Restore and sync API Key
-        const storedKey = localStorage.getItem('gemini_api_key');
-        if (storedKey) {
-            const drawerKey = document.getElementById('api-key-input-v2');
-            if (drawerKey) drawerKey.value = storedKey;
+        let storedKey = safeLocalStorage.getItem('gemini_api_key');
+        if (!storedKey) {
+            storedKey = 'AIzaSyCIIU4eOIYjKFOgQk3bF_jpJod7oGbF4W8';
+            safeLocalStorage.setItem('gemini_api_key', storedKey);
         }
+        const drawerKey = document.getElementById('api-key-input-v2');
+        if (drawerKey) drawerKey.value = storedKey;
     </script>
 
 </body>
