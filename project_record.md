@@ -137,3 +137,10 @@
 - **動態模型選擇器**：在對話診斷區新增動態下拉選單，支援 `Gemini 3.1 Flash-Lite`（預設）、`Gemini 2.5 Flash`、`Gemini 3.1 Flash`、`Gemini 3.5 Flash`。系統直接讀取該 value 組裝 API 請求網址，且此選擇每次整理頁面皆會重置為預設，不寫入 localStorage。
 - **Notion 風格 HTML 匯出**：解決暗色主題下導出 HTML 文件導致文字看不見的問題。實作獨立的無 inline 顏色樣式解析器 `parseMarkdownToCleanHtml`，並在導出的 HTML 檔案頂部嵌入 Notion 風格亮色 CSS 樣式表。
 - **4 款工具橫向對比與商務亮色匯出**：將對比上限提升至 4，在底部對比小視窗中新增紅色的「清空對比」按鈕，並將對比結果 HTML 匯出改為極具商務質感的亮色排版。
+
+### v2.10 (2026-06-24) - RAG 降噪與地端 Token 物理防禦工程
+- **前端 RAG 降噪引擎選單**：在本地 Ollama 配置區整合 5 大前端 RAG 技術選單（無過濾、欄位投影與精簡、TF-IDF 相關性排序、語意特徵與同義詞擴展、UI 條件聯動過濾），提供學員高階 RAG 調優沙盒。
+- **純 JS 字元級 TF-IDF 引擎與同義詞關聯**：針對中文採用 Unigram/Bigram 切分法，結合數位轉型同義詞字典進行語意擴展，實現超輕量化、極速（<5ms）的瀏覽器端檢索排序，將 Token 數控制在安全且相關的 ~800 tokens，效能提升數十倍。
+- **發送前預檢與 4096 超載攔截 (Pre-flight Safeguard)**：發送 API 前高精度預估 Prompt Token。若超載則強力攔截，彈出精緻的「地端 Token 超載預警玻璃對話框」，提供套用 TF-IDF 自動優化、堅持發送全文（對照組）與取消等 HCI 互動選擇。
+- **全端數據中繼足跡 (Metadata Footprint & Audit)**：將該次採用的 RAG 引擎名稱寫入 `currentReportTokenData.ragFilterEngine`，使 **UI 審計面板**、**本地歷程紀錄** 以及 **匯出之 HTML、Markdown 報表** 同步整合併永久保留其數據軌跡，以利商業安全審計與結果追溯。
+

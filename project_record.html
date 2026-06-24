@@ -542,8 +542,21 @@
             <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                 <div style="border-left: 3px solid var(--accent-secondary); padding-left: 1rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <strong style="font-size: 1.1rem; color: white;">v2.00 當前版本 (智慧搜尋防干擾與 RAG 雙對話模式)</strong>
+                        <strong style="font-size: 1.1rem; color: white;">v2.10 當前版本 (RAG 降噪與地端 Token 物理防禦)</strong>
                         <span style="background: rgba(6, 182, 212, 0.15); color: var(--accent-secondary); font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">2026-06-24</span>
+                    </div>
+                    <ul style="padding-left: 1.25rem; color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7;">
+                        <li><strong>前端 RAG 降噪配置選單</strong>：本地 Ollama 配置區整合 5 大前端 RAG 技術選單（無過濾、欄位投影與精簡、TF-IDF 相關性排序、語意特徵與同義詞擴展、UI 條件聯動過濾），提供高階 RAG 調優教學沙盒。</li>
+                        <li><strong>純 JS 中文 TF-IDF 檢索與同義詞擴充</strong>：針對中文採用 Unigram/Bigram 的 N-gram 切分法，結合轉型專屬同義詞字典，在瀏覽器端實現極速（&lt;5ms）語意排序與 Token 壓縮，確保輸入在安全且高相關的 ~800 tokens，效能提升數十倍。</li>
+                        <li><strong>發送前預檢與 4,096 超載攔截 (Pre-flight Safeguard)</strong>：發送 API 前高精度預估 Token。若超載則強力攔截，彈出精緻的「地端 Token 超載預警玻璃對話框」，提供套用 TF-IDF 自動優化、堅持發送全文（對照組）與取消等 HCI 互動方案。</li>
+                        <li><strong>全端中繼數據足跡 (Metadata Footprint & Audit)</strong>：將使用的 RAG 降噪引擎名稱寫入本地歷程資料庫中，並同步整合入 HTML、Markdown 匯出檔案，確保診斷報告具備可重複性與商業安全審計追溯價值。</li>
+                    </ul>
+                </div>
+
+                <div style="border-left: 3px solid var(--text-secondary); padding-left: 1rem; opacity: 0.7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong style="font-size: 1.1rem; color: white;">v2.00 智慧搜尋防干擾與 RAG 雙對話模式</strong>
+                        <span style="background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">2026-06-24</span>
                     </div>
                     <ul style="padding-left: 1.25rem; color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7;">
                         <li><strong>防干擾智慧搜尋</strong>：重構側邊欄搜尋邏輯。當點擊任一智慧搜尋模式時，自動先清空其他過濾條件（類別、來源、適用行業，並重設價格為全部），確保搜尋不受干擾，人工仍可二次手動微調且即時呈現。</li>
