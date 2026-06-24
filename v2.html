@@ -1089,13 +1089,13 @@
                 </div>
 
                 <!-- Prompt Input & Send Button -->
-                <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;">
-                    <input type="text" id="ai-prompt-input" class="search-main-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="width: 100%;" autocomplete="off">
-                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                        <button onclick="askAiConsultant('recommended')" class="search-action-btn" id="ai-send-rec-btn" style="flex: 1; min-width: 180px; background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">
+                <div style="display: flex; gap: 0.75rem; align-items: stretch; margin-bottom: 1rem;">
+                    <textarea id="ai-prompt-input" class="search-main-input" placeholder="請描述您的業務痛點，例如：「我是餐飲業，想解決排隊等待時間過長和漏單的問題」..." style="flex: 1; min-height: 96px; height: 96px; resize: none; line-height: 1.5; padding: 0.75rem 1rem; border-radius: 10px; font-family: inherit; font-size: 0.9rem;" autocomplete="off"></textarea>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 230px; flex-shrink: 0;">
+                        <button onclick="askAiConsultant('recommended')" class="search-action-btn" id="ai-send-rec-btn" style="flex: 1; height: auto; padding: 0 1rem; justify-content: center; background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">
                             <i class="bi bi-patch-check-fill"></i> <span id="ai-btn-rec-text">推薦回答 (精選診斷)</span>
                         </button>
-                        <button onclick="askAiConsultant('unlimited')" class="search-action-btn" id="ai-send-unl-btn" style="flex: 1; min-width: 180px; background: linear-gradient(135deg, var(--accent-cyan) 0%, #0891b2 100%); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3); border-color: transparent;">
+                        <button onclick="askAiConsultant('unlimited')" class="search-action-btn" id="ai-send-unl-btn" style="flex: 1; height: auto; padding: 0 1rem; justify-content: center; background: linear-gradient(135deg, var(--accent-cyan) 0%, #0891b2 100%); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3); border-color: transparent;">
                             <i class="bi bi-chat-right-dots-fill"></i> <span id="ai-btn-unl-text">不設限回答 (自訂指令)</span>
                         </button>
                     </div>
@@ -1104,9 +1104,14 @@
                 <!-- API Key & History Control Row -->
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; flex-wrap: wrap; gap: 1rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; flex-grow: 1;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 260px; flex-grow: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 320px; flex-grow: 1;">
                             <label for="api-key-input-v2" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">Gemini API Key：</label>
-                            <input type="password" id="api-key-input-v2" class="search-main-input" placeholder="請輸入您的 Gemini API 金鑰 (安全儲存於本地)..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; width: 100%;" oninput="syncApiKey(this.value)">
+                            <div style="display: flex; gap: 0.5rem; flex-grow: 1; align-items: center;">
+                                <input type="password" id="api-key-input-v2" class="search-main-input" placeholder="請輸入您的 Gemini API 金鑰 (安全儲存於本地)..." style="height: 34px; font-size: 0.82rem; padding: 0 0.75rem; flex-grow: 1; width: 0; min-width: 120px;">
+                                <button onclick="saveApiKey(event)" class="search-action-btn" style="height: 34px; padding: 0 0.85rem; font-size: 0.82rem; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; gap: 0.25rem; transition: all 0.2s; box-shadow: none;">
+                                    <i class="bi bi-save2-fill"></i> <span>儲存</span>
+                                </button>
+                            </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 220px;">
                             <label for="model-select-v2" style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">AI 模型：</label>
@@ -7233,6 +7238,28 @@
             if (drawerKey) drawerKey.value = val;
         }
 
+        // Save API Key
+        function saveApiKey(event) {
+            const keyInput = document.getElementById('api-key-input-v2');
+            if (keyInput) {
+                const val = keyInput.value.trim();
+                safeLocalStorage.setItem('gemini_api_key', val);
+                
+                // Show temporary success feedback on the button
+                const btn = event.currentTarget;
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check-lg" style="color: var(--accent-cyan);"></i> <span>已儲存</span>';
+                btn.style.borderColor = 'var(--accent-cyan)';
+                btn.style.color = 'white';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.borderColor = 'rgba(255,255,255,0.1)';
+                    btn.style.color = 'var(--text-secondary)';
+                }, 1500);
+            }
+        }
+
         // Active filters and render logic
         function filterData() {
             const query = sidebarSearchInput.value.trim().toLowerCase();
@@ -8525,6 +8552,17 @@ ${JSON.stringify(contextTools, null, 2)}
             sortData();
             renderCards();
         });
+
+        // Textarea Enter Key handling
+        const promptInput = document.getElementById('ai-prompt-input');
+        if (promptInput) {
+            promptInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    askAiConsultant('recommended');
+                }
+            });
+        }
 
         // On Load initialization
         initFilters();
